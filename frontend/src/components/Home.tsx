@@ -4,15 +4,13 @@ import type { User, Project, UserProfile, FundingApplication, Conversation, Mess
 import './Home.css';
 import AIProposalAssistant from './AIProposalAssistant';
 import TeamFinder from './TeamFinder';
-import FundingPortal from './FundingPortal';
+import FundingPortal from './fundingPortal';
 import { FundingService } from '../services/fundingService';
 import Chat from './Chat';
 import { io, Socket } from "socket.io-client";
 import { useEffect } from "react";
 import Profile from './Profile';
 import Projects from './Projects.tsx';
-import Notifications from "./Notifications";
-import Mentorship from './Mentorship';
 interface HomeProps {
   user: User;
   onLogout: () => void;
@@ -28,21 +26,29 @@ interface ChatUser {
   lastMessageTime?: Date;
   unreadCount?: number;
 }
+interface ChatUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  skills: string[];
+  lastMessage?: string;
+  lastMessageTime?: Date;
+  unreadCount?: number;
+}
 
 const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
-  const isMentor = user.role === 'mentor';
-
   // Update activeTab to include 'funding' and 'chat'
   const [activeTab, setActiveTab] = useState<
-  'dashboard' | 'projects' | 'network' | 'ai' | 'funding' | 'chat' | 'profile' | 'mentorship'
+  'dashboard' | 'projects' | 'network' | 'ai' | 'funding' | 'chat' | 'profile'
 >('dashboard');
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [, setConnections] = useState<string[]>([]);
+  const [connections, setConnections] = useState<string[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [fundingApplications, setFundingApplications] = useState<FundingApplication[]>([]);
-  const [, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
    const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messages] = useState<{ [conversationId: string]: Message[] }>({});
+  const [messages, setMessages] = useState<{ [conversationId: string]: Message[] }>({});
  const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
 
   const [currentConversationId, setCurrentConversationId] =
@@ -68,6 +74,12 @@ const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
     } catch (err) {
       console.warn('Failed to emit register on connect', err);
     }
+    // register this socket to a personal room for this user so server can push notifications
+    try {
+      s.emit('register', { user_id: user.id });
+    } catch (err) {
+      console.warn('Failed to emit register on connect', err);
+    }
   });
 
   return () => {
@@ -87,7 +99,7 @@ useEffect(() => {
       }
     })();
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/projects/my`, {
+    fetch("http://127.0.0.1:5000/api/projects/my", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -110,7 +122,7 @@ useEffect(() => {
   
           // Get 
           console.log('Fetching connections...');
-          const connectionsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connections`, {
+          const connectionsRes = await fetch('http://127.0.0.1:5000/api/users/connections', {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -124,7 +136,7 @@ useEffect(() => {
          setConnections(connectedUsers);
           // Get pending connection requests (both sent and received)
           console.log('Fetching connection requests...');
-          const requestsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests`, {
+          const requestsRes = await fetch('http://127.0.0.1:5000/api/users/connection-requests', {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -241,6 +253,7 @@ useEffect(() => {
 
   // Chat State
  
+ 
 
   // Updated connection handler function to create and open chat
   const handleSendConnection = (toUserId: string, message: string) => {
@@ -250,6 +263,7 @@ useEffect(() => {
       user1_id: user.id,
       user2_id: toUserId
     });
+    
     const targetUser = allUsers.find(u => u.id === toUserId);
     console.log(`Connection request sent to ${targetUser?.name} with message: "${message}"`);
     
@@ -259,6 +273,7 @@ useEffect(() => {
         ? { ...u, pendingRequests: [...u.pendingRequests, user.id] }
         : u
     ));
+  };
   };
 useEffect(() => {
   if (!socket) return;
@@ -284,6 +299,27 @@ useEffect(() => {
 
   // Chat functions
   const handleSendMessage = (conversationId: string, text: string) => {
+    if (!socket) return;
+
+    // Support both the conversation_id-only payload and the user-based payload.
+    // If conversationId looks like "idA-idB" we can derive participants.
+    const parts = (conversationId || '').split('-');
+    if (parts.length === 2) {
+      const [a, b] = parts;
+      // pick current user as sender if matches
+      const sender = user.id;
+      const recipient = a === sender ? b : b === sender ? a : (parts[1]);
+
+      socket.emit('send_message', {
+        user1_id: sender,
+        user2_id: recipient,
+        text,
+        sender_name: user.name,
+      });
+    } else {
+      // fallback: emit raw conversation_id payload (server also supports it)
+      socket.emit('send_message', { conversation_id: conversationId, text, sender_name: user.name });
+    }
     if (!socket) return;
 
     // Support both the conversation_id-only payload and the user-based payload.
@@ -351,79 +387,43 @@ useEffect(() => {
             >
               Dashboard
             </button>
-            {isMentor ? (
-              <>
-                <button 
-                  className={`nav-item ${activeTab === 'mentorship' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('mentorship')}
-                >
-                  Mentorship
-                </button>
-                <button 
-                  className={`nav-item ${activeTab === 'network' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('network')}
-                >
-                  Network
-                </button>
-                <button 
-                  className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('chat')}
-                >
-                  Chat
-                </button>
-                <button
-                  className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('profile')}
-                >
-                  Profile
-                </button>
-              </>
-            ) : (
-              <>
-                <button 
-                  className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('projects')}
-                >
-                  My Projects
-                </button>
-                <button 
-                  className={`nav-item ${activeTab === 'network' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('network')}
-                >
-                  Network
-                </button>
-                <button 
-                  className={`nav-item ${activeTab === 'funding' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('funding')}
-                >
-                  💰 Funding
-                </button>
-                <button 
-                  className={`nav-item ${activeTab === 'ai' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('ai')}
-                >
-                  🤖 AI Assistant
-                </button>
-                <button 
-                  className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('chat')}
-                >
-                  💬 Chat
-                </button>
-                <button
-                  className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('profile')}
-                >
-                  Profile
-                </button>
-                <button
-                  className={`nav-item ${activeTab === 'mentorship' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('mentorship')}
-                >
-                  🎓 Mentorship
-                </button>
-              </>
-            )}
+            <button 
+              className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`}
+              onClick={() => setActiveTab('projects')}
+            >
+              My Projects
+            </button>
+            <button 
+              className={`nav-item ${activeTab === 'network' ? 'active' : ''}`}
+              onClick={() => setActiveTab('network')}
+            >
+              Network
+            </button>
+            <button 
+              className={`nav-item ${activeTab === 'funding' ? 'active' : ''}`}
+              onClick={() => setActiveTab('funding')}
+            >
+              💰 Funding
+            </button>
+            <button 
+              className={`nav-item ${activeTab === 'ai' ? 'active' : ''}`}
+              onClick={() => setActiveTab('ai')}
+            >
+              🤖 AI Assistant
+            </button>
+            <button 
+              className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
+              onClick={() => setActiveTab('chat')}
+            >
+              💬 Chat
+            </button>
+            <button 
+  className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+  onClick={() => setActiveTab('profile')}
+>
+  👤 Profile
+</button>
+
           </nav>
 
          <div className="user-menu">
@@ -465,6 +465,7 @@ useEffect(() => {
                 <div className="stat-icon">📊</div>
                 <div className="stat-info">
                  <h3>{projects.length}</h3>
+                 <h3>{projects.length}</h3>
                   <p>Active Projects</p>
                 </div>
               </div>
@@ -472,7 +473,7 @@ useEffect(() => {
                 <div className="stat-icon">👥</div>
                 <div className="stat-info">
                   <h3>{chatUsers.length}</h3>
-                  <p>{isMentor ? 'Mentees' : 'Connections'}</p>
+                  <p>Connections</p>
                 </div>
               </div>
               <div className="stat-card">
@@ -494,66 +495,34 @@ useEffect(() => {
             <div className="quick-actions">
               <h2>Quick Actions</h2>
               <div className="action-buttons">
-                {isMentor ? (
-                  <>
-                    <button 
-                      className="action-btn secondary"
-                      onClick={() => setActiveTab('mentorship')}
-                    >
-                      🧑‍🏫 Review Mentorship Requests
-                    </button>
-                    <button 
-                      className="action-btn secondary"
-                      onClick={() => setActiveTab('network')}
-                    >
-                      👥 Manage Connections
-                    </button>
-                    <button 
-                      className="action-btn secondary"
-                      onClick={() => setActiveTab('projects')}
-                    >
-                      📁 View My Projects
-                    </button>
-                  </>
-                ) : (
-                  <>
-                  <button 
-                      className="action-btn secondary"
-                      onClick={() => setActiveTab('projects')}
-                    >
-                      📁 View My Projects
-                    </button>
-                    <button 
-                      className="action-btn secondary"
-                      onClick={() => setActiveTab('ai')}
-                    >
-                      🤖 Assistance
-                    </button>
-                    <button 
-                      className="action-btn secondary"
-                      onClick={() => setActiveTab('network')}
-                    >
-                      👥 Find Team Members
-                    </button>
-                    <button 
-                      className="action-btn secondary"
-                      onClick={() => setActiveTab('funding')}
-                    >
-                      💼 Apply for Funding
-                    </button>
-                   <button 
-                      className="action-btn secondary"
-                      onClick={() => setActiveTab('mentorship')}
-                    >
-                      🧑‍🏫 Mentorship
-                    </button></>
-                )}
+               
+                <button 
+                  className="action-btn secondary"
+                  onClick={() => setActiveTab('ai')}
+                >
+                  🤖 AI Proposal Assistant
+                </button>
+                <button 
+                  className="action-btn secondary"
+                  onClick={() => setActiveTab('network')}
+                >
+                  👥 Find Team Members
+                </button>
+                <button 
+                  className="action-btn secondary"
+                  onClick={() => setActiveTab('funding')}
+                >
+                  💼 Apply for Funding
+                </button>
               </div>
             </div>
 
             </div>
+            </div>
         )}
         {activeTab === 'projects' && (
+  <Projects />
+)}
   <Projects />
 )}
 
@@ -582,6 +551,13 @@ useEffect(() => {
             <AIProposalAssistant />
           </div>
         )}
+
+        {activeTab === 'chat' && (
+          <div className="chat-tab">
+            <Chat currentUser={user} socket={socket} />
+          </div>
+        )}
+
 
         {activeTab === 'chat' && (
           <div className="chat-tab">
@@ -663,6 +639,7 @@ useEffect(() => {
         </div>
       )}
 
+      
       
     </div>
   );

@@ -321,11 +321,12 @@
   align-items: center;
   gap: 0.6rem;
   cursor: pointer;
-  padding: 0.5rem 0.85rem 0.5rem 3.75rem;
-  border-radius: 14px;
+  padding: 0.75rem 1rem 0.75rem 4.25rem; /* space for custom box */
+  border-radius: 12px;
   transition: background 0.2s ease, transform 0.08s ease;
-  border: 1px solid rgba(71, 85, 105, 0.85);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #475569;
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.005));
+  box-shadow: 0 6px 14px rgba(2,12,27,0.45);
 }
 
 .checkbox-label:hover {
@@ -349,20 +350,19 @@
   font-weight: 600;
   text-transform: capitalize;
   position: relative;
-  font-size: 0.9rem;
 }
 
 /* custom checkbox box shown to the left of each label */
 .checkbox-label span::before {
   content: '';
   position: absolute;
-  left: -48px;
+  left: -56px;
   top: 50%;
   transform: translateY(-50%);
-  width: 32px;
-  height: 32px;
-  border-radius: 12px;
-  border: 1px solid rgba(71, 85, 105, 0.9);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid #475569;
   background: #071125;
   display: flex;
   align-items: center;
@@ -374,18 +374,18 @@
 .checkbox-label input:checked + span::after {
   content: '✓';
   position: absolute;
-  left: -44px;
+  left: -46px;
   top: 50%;
   transform: translateY(-50%);
   color: white;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
 }
 
 .checkbox-label input:checked + span::before {
   background: linear-gradient(180deg,#3b82f6,#2563eb);
   border-color: #3b82f6;
-  box-shadow: 0 6px 14px rgba(37,99,235,0.22);
+  box-shadow: 0 8px 18px rgba(37,99,235,0.24);
 }
 
 .checkbox-label:hover {

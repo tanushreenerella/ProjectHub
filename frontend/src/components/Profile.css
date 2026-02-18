@@ -58,69 +58,80 @@
 .profile-name-row {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.2rem;
-  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 32px;
 }
 
-.profile-name-row h2 {
-  margin: 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #f8fafc;
+.profile-info {
+  flex: 1;
 }
 
-.profile-role-badge {
-  padding: 0.15rem 0.6rem;
-  border-radius: 999px;
-  font-size: 0.68rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.bio {
+  margin-top: 12px;
 }
 
-.profile-role-badge.student {
-  background: rgba(59,130,246,0.12);
-  border: 1px solid rgba(59,130,246,0.25);
-  color: #60a5fa;
+.bio-text {
+  color: #cbd5e1;
+  line-height: 1.6;
+  max-width: 720px;
 }
 
-.profile-role-badge.mentor {
-  background: rgba(245,158,11,0.1);
-  border: 1px solid rgba(245,158,11,0.25);
-  color: #fbbf24;
-}
-
-.profile-email {
-  margin: 0 0 0.875rem;
-  color: #64748b;
-  font-size: 0.8rem;
-}
-
-.profile-bio-edit {
+.bio-edit {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 8px;
+  max-width: 720px;
 }
 
-.profile-bio-edit textarea {
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 7px;
-  color: #e2e8f0;
-  padding: 0.6rem 0.75rem;
-  font-size: 0.82rem;
-  font-family: inherit;
+.bio-textarea {
+  width: 100%;
   resize: vertical;
-  outline: none;
-  line-height: 1.55;
+  min-height: 96px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #374151;
+  background: #0b1220;
+  color: #e2e8f0;
+  font-size: 15px;
+  text-align: center;
+  box-shadow: inset 0 2px 6px rgba(2,12,27,0.6);
 }
 
-.profile-bio-edit textarea:focus { border-color: #3b82f6; }
+.bio-actions {
+  display: flex;
+  gap: 8px;
+}
 
-.profile-bio-actions { display: flex; gap: 0.5rem; }
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  font-weight: 600;
+}
 
-.profile-bio-view {
+.btn.save {
+  background: linear-gradient(180deg,#3b82f6,#2563eb);
+  color: white;
+  border-color: #2563eb;
+}
+
+.btn.cancel {
+  background: transparent;
+  color: #cbd5e1;
+  border: 1px solid #374151;
+}
+
+.btn.edit {
+  margin-left: 12px;
+  padding: 8px 12px;
+  background: transparent;
+  color: #e2e8f0;
+  border: 1px solid #374151;
+  border-radius: 8px;
+}
+
+.stats {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;

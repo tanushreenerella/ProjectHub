@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AIService } from "../services/aiService";
 import "./AIProposalAssistant.css";
 
@@ -79,15 +79,24 @@ const AIProposalAssistant: React.FC = () => {
     else setCopilotResult(null);
   };
 
+  const hasFetchedProjects = useRef(false);
+
   useEffect(() => {
-    if (assistantMode !== "copilot" || copilotProjects.length > 0 || projectsLoading) return;
+    if (assistantMode !== "copilot" || copilotProjects.length > 0 || hasFetchedProjects.current) return;
+    hasFetchedProjects.current = true;
     const fetchProjects = async () => {
       setProjectsLoading(true);
       try {
         const token = localStorage.getItem("csh_token");
+        if (!token) return;
         const response = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/my`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+        if (response.status === 401) {
+          localStorage.removeItem("csh_token");
+          window.location.assign("#/signin");
+          return;
+        }
         if (!response.ok) throw new Error(`Projects fetch failed: ${response.status}`);
         const data = await response.json();
         const projects = Array.isArray(data.projects) ? data.projects : [];
@@ -103,7 +112,7 @@ const AIProposalAssistant: React.FC = () => {
       }
     };
     fetchProjects();
-  }, [assistantMode, copilotProjects.length, projectsLoading]);
+  }, [assistantMode, copilotProjects.length]);
 
   const handleRunRagCopilot = async () => {
     if (!projectId.trim() || !copilotQuery.trim()) return;

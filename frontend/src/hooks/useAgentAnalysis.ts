@@ -7,6 +7,13 @@ interface AgentAnalysis {
   teamSuggestions: string;
 }
 
+interface AgentAnalysisResponse {
+  evaluation?: string;
+  proposal?: string;
+  team_suggestions?: string;
+  teamSuggestions?: string;
+}
+
 interface UseAgentAnalysisReturn {
   analysis: AgentAnalysis | null;
   loading: boolean;
@@ -42,13 +49,13 @@ export const useAgentAnalysis = (): UseAgentAnalysisReturn => {
         throw new Error(`Analysis failed: ${response.statusText}`);
       }
 
-      const data: AgentAnalysis = await response.json();
+      const data = (await response.json()) as AgentAnalysisResponse;
       setAnalysis({
-  evaluation: data.evaluation || "No evaluation available",
-  proposal: data.proposal || "No proposal available",
-  teamSuggestions: (data as any).team_suggestions || data.teamSuggestions || "No team suggestions available"
-});
-
+        evaluation: data.evaluation || "No evaluation available",
+        proposal: data.proposal || "No proposal available",
+        teamSuggestions:
+          data.team_suggestions || data.teamSuggestions || "No team suggestions available",
+      });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch analysis';
       setError(errorMessage);
