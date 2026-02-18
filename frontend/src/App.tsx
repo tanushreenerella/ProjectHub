@@ -32,9 +32,9 @@ const App: React.FC = () => {
   // Navbar handlers (simple navigation)
   const onFeaturesClick = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const onStatsClick = () => window.scrollTo({ top: 0, behavior: 'smooth' })
-  const onGetStartedClick = () => window.location.assign('/register')
-  const onLoginClick = () => window.location.assign('/signin')
-  const onRegisterClick = () => window.location.assign('/register')
+const onGetStartedClick = () => window.location.assign('#/register')
+const onLoginClick = () => window.location.assign('#/signin')
+const onRegisterClick = () => window.location.assign('#/register')
 
  
 
@@ -72,7 +72,7 @@ const App: React.FC = () => {
       // persist  + user
       if (access_token) localStorage.setItem('csh_token', access_token)
       handleLogin(userObj)
-      window.location.assign('/')
+    window.location.assign('#/')
     } catch (err: any) {
       console.error('Sign-in failed', err?.response?.data || err)
       alert(err?.response?.data?.error || 'Sign-in failed')
@@ -80,16 +80,20 @@ const App: React.FC = () => {
   }
   return (
     <HashRouter>
-      <Navbar
-        onFeaturesClick={onFeaturesClick}
-        onStatsClick={onStatsClick}
-        onGetStartedClick={onGetStartedClick}
-        onLoginClick={onLoginClick}
-        onRegisterClick={onRegisterClick}
-      />
+      {!user && (
+    <Navbar
+      onFeaturesClick={onFeaturesClick}
+      onStatsClick={onStatsClick}
+      onGetStartedClick={onGetStartedClick}
+      onLoginClick={onLoginClick}
+      onRegisterClick={onRegisterClick}
+    />
+  )}
       <Routes>
-        <Route path="/signin" element={<SignIn onSignIn={handleSignIn} onSwitchToRegister={() => window.location.assign('/register')} />} />
-        <Route path="/register" element={<Register onRegister={handleRegister} onSwitchToLogin={() => window.location.assign('/signin')} />} />
+        <Route path="/signin" element={<SignIn onSignIn={handleSignIn} onSwitchToRegister={() => window.location.assign('#/register')}
+ />} />
+        <Route path="/register" element={<Register onRegister={handleRegister} onSwitchToLogin={() => window.location.assign('#/signin')}
+/>} />
         <Route path="/" element={user ? <Home user={user} onLogout={handleLogout} /> : <Navigate to="/signin" replace />} />
       </Routes>
     </HashRouter>
