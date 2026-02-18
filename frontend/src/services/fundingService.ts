@@ -2,26 +2,6 @@
 import type { FundingOpportunity, FundingApplication, Investor } from '../types/index.ts';
 const API_BASE = `${import.meta.env.VITE_API_URL}/api/funding`;
 
-export interface FundingReadinessInsight {
-  score: number;
-  summary: string;
-  strengths: string[];
-  missing: string[];
-  next_steps: string[];
-}
-
-export interface FundingMatchOpportunity extends FundingOpportunity {
-  matchScore: number;
-  matchReasons: string[];
-}
-
-export interface FundingInsightsResponse {
-  projectId: string;
-  projectTitle: string;
-  readiness: FundingReadinessInsight;
-  topMatches: FundingMatchOpportunity[];
-}
-
 function authHeader(): HeadersInit {
   const token = localStorage.getItem('csh_token');
   const headers: HeadersInit = {};
@@ -33,6 +13,25 @@ function authHeader(): HeadersInit {
   return headers;
 }
 
+export interface FundingInsightsResponse {
+  projectId: string;
+  projectTitle: string;
+  readiness: {
+    score: number;
+    summary: string;
+    strengths: string[];
+    missing: string[];
+    next_steps: string[];
+  };
+  topMatches: Array<{
+    id: string;
+    title: string;
+    provider: string;
+    deadline: Date | null;
+    matchScore: number;
+    matchReasons: string[];
+  }>;
+}
 
 export class FundingService {
   static async getFundingOpportunities(filters?: { category?: string; stage?: string; search?: string; }): Promise<FundingOpportunity[]> {

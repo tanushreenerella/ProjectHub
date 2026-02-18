@@ -1,5 +1,5 @@
 // src/components/Home.tsx
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { User, Project, UserProfile, FundingApplication, Conversation, Message } from '../types/index.ts';
 import './Home.css';
 import AIProposalAssistant from './AIProposalAssistant';
@@ -8,9 +8,12 @@ import FundingPortal from './fundingPortal';
 import { FundingService } from '../services/fundingService';
 import Chat from './Chat';
 import { io, Socket } from "socket.io-client";
-import { useEffect } from "react";
 import Profile from './Profile';
 import Projects from './Projects.tsx';
+import Notifications from "./Notifications";
+import Mentorship from './Mentorship';
+import Matchmaking from './Matchmaking.tsx';
+
 interface HomeProps {
   user: User;
   onLogout: () => void;
@@ -26,29 +29,22 @@ interface ChatUser {
   lastMessageTime?: Date;
   unreadCount?: number;
 }
-interface ChatUser {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  skills: string[];
-  lastMessage?: string;
-  lastMessageTime?: Date;
-  unreadCount?: number;
-}
 
 const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
+  const isMentor = user.role === 'mentor';
+
   // Update activeTab to include 'funding' and 'chat'
   const [activeTab, setActiveTab] = useState<
-  'dashboard' | 'projects' | 'network' | 'ai' | 'funding' | 'chat' | 'profile'
+  'dashboard' | 'projects' | 'network' | 'ai' | 'funding' | 'chat' | 'profile' | 'mentorship' | 'matchmaking'
 >('dashboard');
+  const [chatBadge, setChatBadge] = useState(0);
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [connections, setConnections] = useState<string[]>([]);
+  const [, setConnections] = useState<string[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [fundingApplications, setFundingApplications] = useState<FundingApplication[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
    const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messages, setMessages] = useState<{ [conversationId: string]: Message[] }>({});
+  const [messages] = useState<{ [conversationId: string]: Message[] }>({});
  const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
 
   const [currentConversationId, setCurrentConversationId] =
@@ -61,24 +57,26 @@ const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
   if (!token) return;
 
   const s = io(`${import.meta.env.VITE_API_URL}`, {
-  query: { token }
-});
+    query: { token },
+    transports: ['polling', 'websocket'],
+    upgrade: true,
+  });
 
   setSocket(s);
 
   s.on("connect", () => {
     console.log("✅ Connected to chat server");
-    // register this socket to a personal room for this user so server can push notifications
     try {
       s.emit('register', { user_id: user.id });
     } catch (err) {
       console.warn('Failed to emit register on connect', err);
     }
-    // register this socket to a personal room for this user so server can push notifications
-    try {
-      s.emit('register', { user_id: user.id });
-    } catch (err) {
-      console.warn('Failed to emit register on connect', err);
+  });
+
+  s.on("receive_message", (data: any) => {
+    const senderId = data.sender_id || data.senderId;
+    if (senderId !== user.id) {
+      setChatBadge(prev => prev + 1);
     }
   });
 
@@ -99,7 +97,7 @@ useEffect(() => {
       }
     })();
 
-    fetch("http://127.0.0.1:5000/api/projects/my", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/projects/my`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -122,7 +120,7 @@ useEffect(() => {
   
           // Get 
           console.log('Fetching connections...');
-          const connectionsRes = await fetch('http://127.0.0.1:5000/api/users/connections', {
+          const connectionsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connections`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -136,7 +134,7 @@ useEffect(() => {
          setConnections(connectedUsers);
           // Get pending connection requests (both sent and received)
           console.log('Fetching connection requests...');
-          const requestsRes = await fetch('http://127.0.0.1:5000/api/users/connection-requests', {
+          const requestsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -253,7 +251,6 @@ useEffect(() => {
 
   // Chat State
  
- 
 
   // Updated connection handler function to create and open chat
   const handleSendConnection = (toUserId: string, message: string) => {
@@ -263,7 +260,6 @@ useEffect(() => {
       user1_id: user.id,
       user2_id: toUserId
     });
-    
     const targetUser = allUsers.find(u => u.id === toUserId);
     console.log(`Connection request sent to ${targetUser?.name} with message: "${message}"`);
     
@@ -273,7 +269,6 @@ useEffect(() => {
         ? { ...u, pendingRequests: [...u.pendingRequests, user.id] }
         : u
     ));
-  };
   };
 useEffect(() => {
   if (!socket) return;
@@ -320,27 +315,6 @@ useEffect(() => {
       // fallback: emit raw conversation_id payload (server also supports it)
       socket.emit('send_message', { conversation_id: conversationId, text, sender_name: user.name });
     }
-    if (!socket) return;
-
-    // Support both the conversation_id-only payload and the user-based payload.
-    // If conversationId looks like "idA-idB" we can derive participants.
-    const parts = (conversationId || '').split('-');
-    if (parts.length === 2) {
-      const [a, b] = parts;
-      // pick current user as sender if matches
-      const sender = user.id;
-      const recipient = a === sender ? b : b === sender ? a : (parts[1]);
-
-      socket.emit('send_message', {
-        user1_id: sender,
-        user2_id: recipient,
-        text,
-        sender_name: user.name,
-      });
-    } else {
-      // fallback: emit raw conversation_id payload (server also supports it)
-      socket.emit('send_message', { conversation_id: conversationId, text, sender_name: user.name });
-    }
 };
 
 
@@ -360,10 +334,19 @@ useEffect(() => {
   }
 
   if (type.startsWith("project_") || type.startsWith("task_") || type === "member_joined_project") {
-    if (notification.project_id) {
-      localStorage.setItem("projecthub_open_project_id", notification.project_id);
+    if (isMentor) {
+      setActiveTab("mentorship");
+    } else {
+      if (notification.project_id) {
+        localStorage.setItem("projecthub_open_project_id", notification.project_id);
+      }
+      setActiveTab("projects");
     }
-    setActiveTab("projects");
+    return;
+  }
+
+  if (type === "match_request_received" || type === "match_mutual") {
+    setActiveTab("matchmaking");
     return;
   }
 
@@ -387,43 +370,113 @@ useEffect(() => {
             >
               Dashboard
             </button>
-            <button 
-              className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`}
-              onClick={() => setActiveTab('projects')}
-            >
-              My Projects
-            </button>
-            <button 
-              className={`nav-item ${activeTab === 'network' ? 'active' : ''}`}
-              onClick={() => setActiveTab('network')}
-            >
-              Network
-            </button>
-            <button 
-              className={`nav-item ${activeTab === 'funding' ? 'active' : ''}`}
-              onClick={() => setActiveTab('funding')}
-            >
-              💰 Funding
-            </button>
-            <button 
-              className={`nav-item ${activeTab === 'ai' ? 'active' : ''}`}
-              onClick={() => setActiveTab('ai')}
-            >
-              🤖 AI Assistant
-            </button>
-            <button 
-              className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
-              onClick={() => setActiveTab('chat')}
-            >
-              💬 Chat
-            </button>
-            <button 
-  className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
-  onClick={() => setActiveTab('profile')}
->
-  👤 Profile
-</button>
-
+            {isMentor ? (
+              <>
+                <button 
+                  className={`nav-item ${activeTab === 'mentorship' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('mentorship')}
+                >
+                  Mentorship
+                </button>
+                <button 
+                  className={`nav-item ${activeTab === 'network' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('network')}
+                >
+                  Network
+                </button>
+                <button
+                  className={`nav-item ${activeTab === 'matchmaking' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('matchmaking')}
+                >
+                  🔥 Match
+                </button>
+                <button
+                  className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
+                  onClick={() => { setActiveTab('chat'); setChatBadge(0); }}
+                  style={{ position: 'relative' }}
+                >
+                  💬 Chat
+                  {chatBadge > 0 && (
+                    <span style={{
+                      position: 'absolute', top: '-4px', right: '-4px',
+                      background: 'linear-gradient(135deg,#6366f1,#3b82f6)',
+                      color: 'white', fontSize: '0.6rem', fontWeight: 700,
+                      minWidth: '16px', height: '16px', borderRadius: '999px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      padding: '0 4px'
+                    }}>{chatBadge}</span>
+                  )}
+                </button>
+                <button
+                  className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('profile')}
+                >
+                  Profile
+                </button>
+              </>
+            ) : (
+              <>
+                <button 
+                  className={`nav-item ${activeTab === 'projects' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('projects')}
+                >
+                  My Projects
+                </button>
+                <button 
+                  className={`nav-item ${activeTab === 'network' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('network')}
+                >
+                  Network
+                </button>
+                <button 
+                  className={`nav-item ${activeTab === 'funding' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('funding')}
+                >
+                  💰 Funding
+                </button>
+                <button 
+                  className={`nav-item ${activeTab === 'ai' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('ai')}
+                >
+                  🤖 AI Assistant
+                </button>
+                <button
+                  className={`nav-item ${activeTab === 'matchmaking' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('matchmaking')}
+                >
+                  🔥 Match
+                </button>
+                <button
+                  className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
+                  onClick={() => { setActiveTab('chat'); setChatBadge(0); }}
+                  style={{ position: 'relative' }}
+                >
+                  💬 Chat
+                  {chatBadge > 0 && (
+                    <span style={{
+                      position: 'absolute', top: '-4px', right: '-4px',
+                      background: 'linear-gradient(135deg,#6366f1,#3b82f6)',
+                      color: 'white', fontSize: '0.6rem', fontWeight: 700,
+                      minWidth: '16px', height: '16px', borderRadius: '999px',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      padding: '0 4px'
+                    }}>{chatBadge}</span>
+                  )}
+                </button>
+                <button
+                  className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('profile')}
+                >
+                  Profile
+                </button>
+                <button
+                  className={`nav-item ${activeTab === 'mentorship' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('mentorship')}
+                >
+                  🎓 Mentorship
+                </button>
+              </>
+            )}
           </nav>
 
          <div className="user-menu">
@@ -435,7 +488,7 @@ useEffect(() => {
            />
 
            <div className="user-info">
-             <span className="user-name">Welcome, {user.name}</span>
+             <span className="user-name">{user.name}</span>
              <span className="user-role">{user.role}</span>
            </div>
 
@@ -462,32 +515,31 @@ useEffect(() => {
 
             <div className="stats-cards">
               <div className="stat-card">
-                <div className="stat-icon">📊</div>
+                <div className="stat-icon">{isMentor ? '🎓' : '📊'}</div>
                 <div className="stat-info">
-                 <h3>{projects.length}</h3>
-                 <h3>{projects.length}</h3>
-                  <p>Active Projects</p>
+                  <h3>{isMentor ? chatUsers.length : projects.length}</h3>
+                  <p>{isMentor ? 'Students Mentored' : 'Active Projects'}</p>
                 </div>
               </div>
               <div className="stat-card">
                 <div className="stat-icon">👥</div>
                 <div className="stat-info">
                   <h3>{chatUsers.length}</h3>
-                  <p>Connections</p>
+                  <p>{isMentor ? 'Connections' : 'Connections'}</p>
                 </div>
               </div>
               <div className="stat-card">
-                <div className="stat-icon">💰</div>
+                <div className="stat-icon">{isMentor ? '📝' : '💰'}</div>
                 <div className="stat-info">
-                  <h3>{fundingApplications.length}</h3>
-                  <p>Funding Applications</p>
+                  <h3>{isMentor ? 0 : fundingApplications.length}</h3>
+                  <p>{isMentor ? 'Pending Requests' : 'Funding Applications'}</p>
                 </div>
               </div>
               <div className="stat-card">
-                <div className="stat-icon">🤝</div>
+                <div className="stat-icon">⚡</div>
                 <div className="stat-info">
-                  <h3>{isMentor ? 'Mentorship' : '12'}</h3>
-                  <p>{isMentor ? 'Mentorship Activity' : 'AI Analyses'}</p>
+                  <h3>{user.skills?.length || 0}</h3>
+                  <p>Skills Listed</p>
                 </div>
               </div>
             </div>
@@ -495,34 +547,116 @@ useEffect(() => {
             <div className="quick-actions">
               <h2>Quick Actions</h2>
               <div className="action-buttons">
-               
-                <button 
-                  className="action-btn secondary"
-                  onClick={() => setActiveTab('ai')}
-                >
-                  🤖 AI Proposal Assistant
-                </button>
-                <button 
-                  className="action-btn secondary"
-                  onClick={() => setActiveTab('network')}
-                >
-                  👥 Find Team Members
-                </button>
-                <button 
-                  className="action-btn secondary"
-                  onClick={() => setActiveTab('funding')}
-                >
-                  💼 Apply for Funding
-                </button>
+                {isMentor ? (
+                  <>
+                    <button
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('mentorship')}
+                    >
+                      🧑‍🏫 Review Mentorship Requests
+                    </button>
+                    <button
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('network')}
+                    >
+                      👥 Manage Connections
+                    </button>
+                    <button
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('matchmaking')}
+                    >
+                      🔥 Find Students to Mentor
+                    </button>
+                    <button
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('profile')}
+                    >
+                      👤 Edit My Profile
+                    </button>
+                  </>
+                ) : (
+                  <>
+                  <button 
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('projects')}
+                    >
+                      📁 View My Projects
+                    </button>
+                    <button 
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('ai')}
+                    >
+                      🤖 Assistance
+                    </button>
+                    <button 
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('network')}
+                    >
+                      👥 Find Team Members
+                    </button>
+                    <button 
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('funding')}
+                    >
+                      💼 Apply for Funding
+                    </button>
+                   <button 
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('mentorship')}
+                    >
+                      🧑‍🏫 Mentorship
+                    </button></>
+                )}
               </div>
             </div>
 
-            </div>
+            {!isMentor && (
+              <div className="journey-section">
+                <h2 className="journey-title">Your Startup Journey</h2>
+                <div className="journey-steps">
+                  <div className={`journey-step ${projects.length > 0 ? 'completed' : 'active'}`}>
+                    <div className="journey-step-num">01</div>
+                    <div className="journey-step-icon">🚀</div>
+                    <h3>Create a Project</h3>
+                    <p>Submit your idea and get instant AI feedback on market fit</p>
+                    <button className="journey-btn" onClick={() => setActiveTab('projects')}>
+                      {projects.length > 0 ? '✓ View Projects' : 'Get Started →'}
+                    </button>
+                  </div>
+                  <div className={`journey-step ${chatUsers.length > 0 ? 'completed' : ''}`}>
+                    <div className="journey-step-num">02</div>
+                    <div className="journey-step-icon">🤝</div>
+                    <h3>Find Your Team</h3>
+                    <p>Connect with co-founders, developers, and designers</p>
+                    <button className="journey-btn" onClick={() => setActiveTab('network')}>
+                      {chatUsers.length > 0 ? '✓ View Network' : 'Find Team →'}
+                    </button>
+                  </div>
+                  <div className="journey-step">
+                    <div className="journey-step-num">03</div>
+                    <div className="journey-step-icon">🎓</div>
+                    <h3>Get Mentored</h3>
+                    <p>Request guidance from experienced startup mentors</p>
+                    <button className="journey-btn" onClick={() => setActiveTab('mentorship')}>
+                      Find Mentor →
+                    </button>
+                  </div>
+                  <div className={`journey-step ${fundingApplications.length > 0 ? 'completed' : ''}`}>
+                    <div className="journey-step-num">04</div>
+                    <div className="journey-step-icon">💰</div>
+                    <h3>Apply for Funding</h3>
+                    <p>Explore grants and funding opportunities for your startup</p>
+                    <button className="journey-btn" onClick={() => setActiveTab('funding')}>
+                      {fundingApplications.length > 0 ? '✓ View Applications' : 'Explore →'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             </div>
         )}
         {activeTab === 'projects' && (
-  <Projects />
-)}
   <Projects />
 )}
 
@@ -558,18 +692,15 @@ useEffect(() => {
           </div>
         )}
 
-
-        {activeTab === 'chat' && (
-          <div className="chat-tab">
-            <Chat currentUser={user} socket={socket} />
-          </div>
-        )}
-
    {activeTab === 'profile' && (
   <Profile user={user} />
 )}
 {activeTab === 'mentorship' && (
   <Mentorship userRole={user.role} />
+)}
+
+{activeTab === 'matchmaking' && (
+  <Matchmaking userId={user.id} userRole={user.role} />
 )}
 
       </main>
@@ -639,7 +770,6 @@ useEffect(() => {
         </div>
       )}
 
-      
       
     </div>
   );

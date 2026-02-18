@@ -63,11 +63,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
 
         // Get 
         console.log('Fetching connections...');
-<<<<<<< HEAD
         const connectionsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connections`, {
-=======
-        const connectionsRes = await fetch('http://127.0.0.1:5000/api/users/connections', {
->>>>>>> e8d7ba3 (resolve merge conflicts)
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -81,11 +77,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
 
         // Get pending connection requests (both sent and received)
         console.log('Fetching connection requests...');
-<<<<<<< HEAD
         const requestsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests`, {
-=======
-        const requestsRes = await fetch('http://127.0.0.1:5000/api/users/connection-requests', {
->>>>>>> e8d7ba3 (resolve merge conflicts)
           headers: { Authorization: `Bearer ${token}` }
         });
         
