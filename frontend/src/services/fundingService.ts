@@ -1,170 +1,118 @@
 // src/services/fundingService.ts
 import type { FundingOpportunity, FundingApplication, Investor } from '../types/index.ts';
 
-// Mock data - in real app, this would come from your backend
-const mockFundingOpportunities: FundingOpportunity[] = [
-  {
-    id: '1',
-    title: 'College Innovation Grant',
-    provider: 'University Entrepreneurship Center',
-    amount: '$10,000 - $25,000',
-    deadline: new Date('2024-06-30'),
-    eligibility: ['Current students', 'Early-stage startups', 'Campus-focused solutions'],
-    description: 'Funding for student-led startups that solve campus challenges. Priority given to projects with social impact and innovative technology.',
-    category: 'grant',
-    stage: 'ideation',
-    tags: ['Grant', 'University', 'Early-stage'],
-    website: 'https://university.edu/innovation-grant'
-  },
-  {
-    id: '2',
-    title: 'TechStars Student Competition',
-    provider: 'TechStars',
-    amount: '$50,000 + Mentorship',
-    deadline: new Date('2024-05-15'),
-    eligibility: ['Student teams', 'Tech startups', 'Prototype stage'],
-    description: 'National competition for student tech startups. Winners receive funding and 3-month mentorship program.',
-    category: 'competition',
-    stage: 'prototype',
-    tags: ['Competition', 'Tech', 'Mentorship'],
-    website: 'https://techstars.com/student-comp'
-  },
-  {
-    id: '3',
-    title: 'Alumni Angel Network',
-    provider: 'University Alumni Association',
-    amount: '$25,000 - $100,000',
-    deadline: new Date('2024-07-31'),
-    eligibility: ['Student founders', 'Revenue-generating', 'Scalable business model'],
-    description: 'Angel investment from successful university alumni. Focus on scalable businesses with strong teams.',
-    category: 'investor',
-    stage: 'launched',
-    tags: ['Angel Investment', 'Alumni', 'Growth-stage']
-  },
-  {
-    id: '4',
-    title: 'Campus Crowdfunding Match',
-    provider: 'ProjectHub Platform',
-    amount: '1:1 Matching up to $10,000',
-    deadline: new Date('2024-08-31'),
-    eligibility: ['All students', 'Platform projects', 'Community support'],
-    description: 'We match funds raised through our platform crowdfunding. Perfect for validating your idea with community support.',
-    category: 'crowdfunding',
-    stage: 'ideation',
-    tags: ['Crowdfunding', 'Matching', 'Community']
-  }
-];
+const API_BASE = import.meta.env.DEV ? 'http://localhost:5000/api/funding' : '/api/funding';
 
-const mockInvestors: Investor[] = [
-  {
-    id: '1',
-    name: 'Dr. Sarah Chen',
-    company: 'EduTech Ventures',
-    focusAreas: ['Education Technology', 'AI Learning', 'Student Tools'],
-    investmentRange: '$50K - $500K',
-    website: 'https://edutech.ventures',
-    contactEmail: 'sarah@edutech.ventures',
-    bio: 'Former professor turned investor. Focused on transformative education technology.',
-    previousInvestments: ['StudySync', 'CampusConnect', 'LearnAI']
-  },
-  {
-    id: '2',
-    name: 'Mark Rodriguez',
-    company: 'Campus Capital',
-    focusAreas: ['Student Market', 'Campus Solutions', 'Early-stage'],
-    investmentRange: '$25K - $250K',
-    website: 'https://campus.capital',
-    contactEmail: 'mark@campus.capital',
-    bio: 'Specializing in student and campus-focused startups. Believes in the power of young entrepreneurs.',
-    previousInvestments: ['DormEats', 'TextbookSwap', 'CampusJobs']
-  }
-];
+function authHeader() {
+  const token = localStorage.getItem('csh_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 export class FundingService {
-  static async getFundingOpportunities(filters?: {
-    category?: string;
-    stage?: string;
-    search?: string;
-  }): Promise<FundingOpportunity[]> {
-    // Simulate API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        let opportunities = [...mockFundingOpportunities];
-        
-        if (filters?.category) {
-          opportunities = opportunities.filter(opp => opp.category === filters.category);
-        }
-        
-        if (filters?.stage) {
-          opportunities = opportunities.filter(opp => opp.stage === filters.stage);
-        }
-        
-        if (filters?.search) {
-          const searchLower = filters.search.toLowerCase();
-          opportunities = opportunities.filter(opp => 
-            opp.title.toLowerCase().includes(searchLower) ||
-            opp.provider.toLowerCase().includes(searchLower) ||
-            opp.tags.some(tag => tag.toLowerCase().includes(searchLower))
-          );
-        }
-        
-        resolve(opportunities);
-      }, 500);
-    });
+  static async getFundingOpportunities(filters?: { category?: string; stage?: string; search?: string; }): Promise<FundingOpportunity[]> {
+    const params = new URLSearchParams();
+    if (filters?.category) params.append('category', filters.category);
+    if (filters?.stage) params.append('stage', filters.stage);
+    if (filters?.search) params.append('search', filters.search);
+
+    const res = await fetch(`${API_BASE}/opportunities?${params.toString()}`);
+    if (!res.ok) throw new Error('Failed to load opportunities');
+    const data = await res.json();
+    // convert date strings to Date objects for compatibility with UI
+    return data.map((d: any) => ({ ...d, deadline: d.deadline ? new Date(d.deadline) : null }));
   }
 
   static async getInvestors(): Promise<Investor[]> {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(mockInvestors);
-      }, 300);
-    });
+    const res = await fetch(`${API_BASE}/investors`);
+    if (!res.ok) throw new Error('Failed to load investors');
+    const data = await res.json();
+    // normalize snake_case -> camelCase and provide defaults
+    return (data || []).map((d: any) => ({
+      id: d.id || d._id,
+      name: d.name,
+      company: d.company,
+      investmentRange: d.investment_range || d.investmentRange || '',
+      bio: d.bio || '',
+      focusAreas: d.focus_areas || d.focusAreas || [],
+      previousInvestments: d.previous_investments || d.previousInvestments || [],
+      contactEmail: d.contact_email || d.contactEmail || '',
+      website: d.website || ''
+    }));
   }
 
-  static async submitApplication(application: Omit<FundingApplication, 'id' | 'createdAt'>): Promise<FundingApplication> {
-    // Simulate API submission
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newApplication: FundingApplication = {
-          ...application,
-          id: Math.random().toString(36).substr(2, 9),
-          createdAt: new Date(),
-          status: 'submitted',
-          submittedAt: new Date()
-        };
-        resolve(newApplication);
-      }, 1000);
+  static async submitApplication(application: {
+    opportunityId: string;
+    applicantId?: string;
+    projectId: string;
+    requestedAmount: number;
+    proposal: string;
+    status?: string;
+  }): Promise<FundingApplication> {
+    const res = await fetch(`${API_BASE}/apply`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeader()
+      },
+      body: JSON.stringify(application)
     });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error || 'Failed to submit application');
+    }
+
+    const data = await res.json();
+    // normalize backend snake_case to camelCase and parse dates
+    const normalized: any = {
+      id: data.id || data._id,
+      opportunityId: data.opportunity_id || data.opportunityId,
+      applicantId: data.applicant_id || data.applicantId,
+      projectId: data.project_id || data.projectId,
+      requestedAmount: data.requested_amount ?? data.requestedAmount ?? 0,
+      proposal: data.proposal,
+      status: data.status,
+      submittedAt: data.submitted_at ? new Date(data.submitted_at) : (data.submittedAt ? new Date(data.submittedAt) : null),
+      createdAt: data.created_at ? new Date(data.created_at) : (data.createdAt ? new Date(data.createdAt) : null)
+    };
+
+    return normalized as FundingApplication;
   }
 
   static async getMyApplications(userId: string): Promise<FundingApplication[]> {
-    // Mock user applications
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve([
-          {
-            id: 'app1',
-            opportunityId: '1',
-            applicantId: userId,
-            projectId: '1',
-            status: 'submitted',
-            proposal: 'AI Study Assistant platform for personalized learning...',
-            requestedAmount: 15000,
-            submittedAt: new Date('2024-03-01'),
-            createdAt: new Date('2024-02-28')
-          },
-          {
-            id: 'app2',
-            opportunityId: '2',
-            applicantId: userId,
-            projectId: '2',
-            status: 'draft',
-            proposal: 'Campus marketplace for student commerce...',
-            requestedAmount: 25000,
-            createdAt: new Date('2024-03-15')
-          }
-        ]);
-      }, 500);
+    const res = await fetch(`${API_BASE}/applications/${userId}`, {
+      headers: {
+        ...authHeader()
+      }
     });
+    if (!res.ok) throw new Error('Failed to load applications');
+    const data = await res.json();
+    return data.map((d: any) => ({
+      id: d.id || d._id,
+      opportunityId: d.opportunity_id || d.opportunityId,
+      applicantId: d.applicant_id || d.applicantId,
+      projectId: d.project_id || d.projectId,
+      requestedAmount: d.requested_amount ?? d.requestedAmount ?? 0,
+      proposal: d.proposal,
+      status: d.status,
+      submittedAt: d.submitted_at ? new Date(d.submitted_at) : (d.submittedAt ? new Date(d.submittedAt) : null),
+      createdAt: d.created_at ? new Date(d.created_at) : (d.createdAt ? new Date(d.createdAt) : null)
+    }));
+  }
+
+  static async seedData(): Promise<{status: string}> {
+    const token = localStorage.getItem('csh_token');
+    const res = await fetch(`${API_BASE}/seed`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      }
+    });
+    if (!res.ok) {
+      const err = await res.text().catch(() => 'seed failed');
+      throw new Error(err || 'Failed to seed data');
+    }
+    return res.json();
   }
 }

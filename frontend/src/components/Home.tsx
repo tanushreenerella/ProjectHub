@@ -5,56 +5,46 @@ import './Home.css';
 import AIProposalAssistant from './AIProposalAssistant';
 import TeamFinder from './TeamFinder';
 import FundingPortal from './fundingPortal';
+import { FundingService } from '../services/fundingService';
+import Chat from './Chat';
 import { io, Socket } from "socket.io-client";
 import { useEffect } from "react";
 import Profile from './Profile';
+import Projects from './Projects.tsx';
 interface HomeProps {
   user: User;
   onLogout: () => void;
 }
 
+interface ChatUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  skills: string[];
+  lastMessage?: string;
+  lastMessageTime?: Date;
+  unreadCount?: number;
+}
 
 const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
-  // Update activeTab to include 'funding'
+  // Update activeTab to include 'funding' and 'chat'
   const [activeTab, setActiveTab] = useState<
-  'dashboard' | 'projects' | 'network' | 'ai' | 'funding' | 'profile'
+  'dashboard' | 'projects' | 'network' | 'ai' | 'funding' | 'chat' | 'profile'
 >('dashboard');
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [connections] = useState<string[]>([]);
-   const [showCreateProject, setShowCreateProject] = useState(false);
-  const [projects, setProjects] = useState<Project[]>([
-    {
-      id: '1',
-      title: 'AI Study Assistant',
-      description: 'An AI-powered platform that helps students create personalized study plans and track their progress.',
-      category: 'Education Tech',
-      stage: 'prototype',
-      skillsNeeded: ['React', 'Node.js', 'Machine Learning'],
-      creatorId: user.id,
-      createdAt: new Date('2024-01-15')
-    },
-    {
-      id: '2',
-      title: 'Campus Marketplace',
-      description: 'A peer-to-peer marketplace for students to buy, sell, and trade items within campus.',
-      category: 'E-commerce',
-      stage: 'ideation',
-      skillsNeeded: ['React Native', 'Firebase', 'UI/UX Design'],
-      creatorId: user.id,
-      createdAt: new Date('2024-01-20')
-    }
-  ]);
-
-  // Add state for funding applications
+  const [connections, setConnections] = useState<string[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [fundingApplications, setFundingApplications] = useState<FundingApplication[]>([]);
-  const [newProject, setNewProject] = useState({
-    title: '',
-    description: '',
-    category: '',
-    stage: 'ideation' as 'ideation' | 'prototype' | 'launched',
-    skillsNeeded: [] as string[]
-  });
+  const [loading, setLoading] = useState(true);
+   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messages, setMessages] = useState<{ [conversationId: string]: Message[] }>({});
+ const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
 
+  const [currentConversationId, setCurrentConversationId] =
+  useState<string | null>(null);
+
+  const [showChatWidget, setShowChatWidget] = useState(false);
   // Add Team Finder state
   useEffect(() => {
   const token = localStorage.getItem("csh_token");
@@ -68,14 +58,114 @@ const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
 
   s.on("connect", () => {
     console.log("✅ Connected to chat server");
+    // register this socket to a personal room for this user so server can push notifications
+    try {
+      s.emit('register', { user_id: user.id });
+    } catch (err) {
+      console.warn('Failed to emit register on connect', err);
+    }
   });
 
   return () => {
     s.disconnect();
   };
 }, []);
+useEffect(() => {
+    const token = localStorage.getItem("csh_token");
+    if (!token) return;
+    // load my funding applications for dashboard count
+    (async () => {
+      try {
+        const apps = await FundingService.getMyApplications(user.id);
+        setFundingApplications(apps || []);
+      } catch (err) {
+        console.warn('Failed to load funding applications for dashboard', err);
+      }
+    })();
 
+    fetch("http://127.0.0.1:5000/api/projects/my", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        setProjects(data.projects || []);
+        setLoading(false);
+      });
+  }, []);
   // Mock users data for Team Finder
+  useEffect(() => {
+      const fetchChatUsers = async () => {
+        try {
+          const token = localStorage.getItem('csh_token');
+          if (!token) {
+            console.error('No token found');
+            return;
+          }
+  
+          // Get 
+          console.log('Fetching connections...');
+          const connectionsRes = await fetch('http://127.0.0.1:5000/api/users/connections', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (!connectionsRes.ok) {
+            console.error('Connections response not ok:', connectionsRes.status);
+          }
+          
+          const connectionsData = await connectionsRes.json();
+          console.log('Connections response:', connectionsData);
+          const connectedUsers = connectionsData.connections || [];
+         setConnections(connectedUsers);
+          // Get pending connection requests (both sent and received)
+          console.log('Fetching connection requests...');
+          const requestsRes = await fetch('http://127.0.0.1:5000/api/users/connection-requests', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          
+          if (!requestsRes.ok) {
+            console.error('Requests response not ok:', requestsRes.status);
+          }
+          
+          const requestsData = await requestsRes.json();
+          console.log('Connection requests response:', requestsData);
+          const requestUsers = (requestsData.requests || []).map((req: any) => ({
+            id: req.other_user_id,
+            name: req.from_user_name,
+            email: req.from_user_email,
+            role: req.from_user_role,
+            skills: req.from_user_skills || [],
+          }));
+  
+          // Combine and remove duplicates
+          const allUsers = [...connectedUsers, ...requestUsers];
+          const uniqueUsers = Array.from(
+            new Map(allUsers.map((u: ChatUser) => [u.id, u])).values()
+          );
+  
+          console.log('Final unique users:', uniqueUsers);
+          const enriched = uniqueUsers.map((u: any) => ({
+            id: u.id,
+            name: u.name || u.full_name || u.displayName || 'Unknown',
+            email: u.email || '',
+            role: u.role || '',
+            skills: u.skills || [],
+            lastMessage: u.lastMessage || undefined,
+            lastMessageTime: u.lastMessageTime ? new Date(u.lastMessageTime) : undefined,
+            unreadCount: u.unreadCount || 0,
+          }));
+         setChatUsers(enriched);
+
+          setLoading(false);
+        } catch (err) {
+          console.error('Error fetching chat users:', err);
+          setLoading(false);
+        }
+      };
+  
+      fetchChatUsers();
+    }, []);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([
     {
       id: '2',
@@ -146,43 +236,19 @@ useEffect(() => {
 
 
   // Chat State
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messages, setMessages] = useState<{ [conversationId: string]: Message[] }>({});
-
-  const [currentConversationId, setCurrentConversationId] =
-  useState<string | null>(null);
-
-  const [showChatWidget, setShowChatWidget] = useState(false);
-
-  const handleCreateProject = (e: React.FormEvent) => {
-    e.preventDefault();
-    const project: Project = {
-      ...newProject,
-      id: Math.random().toString(36).substr(2, 9),
-      creatorId: user.id,
-      createdAt: new Date()
-    };
-    setProjects(prev => [...prev, project]);
-    setNewProject({
-      title: '',
-      description: '',
-      category: '',
-      stage: 'ideation',
-      skillsNeeded: []
-    });
-    setShowCreateProject(false);
-  };
+ 
 
   // Updated connection handler function to create and open chat
   const handleSendConnection = (toUserId: string, message: string) => {
     // In real app, this would call your backend
      if (!socket) return;
     socket?.emit("start_conversation", {
-  user1_id: user.id,
-  user2_id: toUserId
-});
-const targetUser = allUsers.find(u => u.id === toUserId);
-    alert(`Connection request sent to ${targetUser?.name} with message: "${message}"`);
+      user1_id: user.id,
+      user2_id: toUserId
+    });
+    
+    const targetUser = allUsers.find(u => u.id === toUserId);
+    console.log(`Connection request sent to ${targetUser?.name} with message: "${message}"`);
     
     // Update the user's pending requests in state
     setAllUsers(prev => prev.map(u => 
@@ -190,59 +256,7 @@ const targetUser = allUsers.find(u => u.id === toUserId);
         ? { ...u, pendingRequests: [...u.pendingRequests, user.id] }
         : u
     ));
-
-    // Create or find existing conversation with this user
-    
-    };
-useEffect(() => {
-  if (!socket) return;
-const handleReceiveMessage = (msg: any) => {
-  setMessages(prev => ({
-    ...prev,
-    [msg.conversationId]: [
-      ...(prev[msg.conversationId] || []),
-      {
-        id: msg.id ?? crypto.randomUUID(),
-        conversationId: msg.conversationId,
-        senderId: msg.senderId,
-        text: msg.text,
-        timestamp: new Date(msg.timestamp),
-      }
-    ]
-  }));
-};
-
-
-  socket.on("receive_message", handleReceiveMessage);
-
-  return () => {
-    socket.off("receive_message", handleReceiveMessage);
   };
-}, [socket]);
-useEffect(() => {
-  if (!socket) return;
-
-  const handleConversationHistory = (data: any) => {
-    setMessages(prev => ({
-      ...prev,
-      [data.conversation_id]: data.messages.map((m: any) => ({
-        id: m.id,
-        conversationId: data.conversation_id,
-        senderId: m.sender_id,
-        text: m.text,
-        timestamp: new Date(m.timestamp),
-      }))
-    }));
-  };
-
-  socket.on("conversation_history", handleConversationHistory);
-
-  return () => {
-    socket.off("conversation_history", handleConversationHistory);
-  };
-}, [socket]);
-
-    
 useEffect(() => {
   if (!socket) return;
 
@@ -267,10 +281,27 @@ useEffect(() => {
 
   // Chat functions
   const handleSendMessage = (conversationId: string, text: string) => {
-  socket?.emit("send_message", {
-    conversation_id: conversationId,
-    text
-  });
+    if (!socket) return;
+
+    // Support both the conversation_id-only payload and the user-based payload.
+    // If conversationId looks like "idA-idB" we can derive participants.
+    const parts = (conversationId || '').split('-');
+    if (parts.length === 2) {
+      const [a, b] = parts;
+      // pick current user as sender if matches
+      const sender = user.id;
+      const recipient = a === sender ? b : b === sender ? a : (parts[1]);
+
+      socket.emit('send_message', {
+        user1_id: sender,
+        user2_id: recipient,
+        text,
+        sender_name: user.name,
+      });
+    } else {
+      // fallback: emit raw conversation_id payload (server also supports it)
+      socket.emit('send_message', { conversation_id: conversationId, text, sender_name: user.name });
+    }
 };
 
 
@@ -321,6 +352,12 @@ useEffect(() => {
               🤖 AI Assistant
             </button>
             <button 
+              className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
+              onClick={() => setActiveTab('chat')}
+            >
+              💬 Chat
+            </button>
+            <button 
   className={`nav-item ${activeTab === 'profile' ? 'active' : ''}`}
   onClick={() => setActiveTab('profile')}
 >
@@ -354,14 +391,14 @@ useEffect(() => {
               <div className="stat-card">
                 <div className="stat-icon">📊</div>
                 <div className="stat-info">
-                  <h3>{projects.length}</h3>
+                 <h3>{projects.length}</h3>
                   <p>Active Projects</p>
                 </div>
               </div>
               <div className="stat-card">
                 <div className="stat-icon">👥</div>
                 <div className="stat-info">
-                  <h3>{connections.length}</h3>
+                  <h3>{chatUsers.length}</h3>
                   <p>Connections</p>
                 </div>
               </div>
@@ -384,12 +421,7 @@ useEffect(() => {
             <div className="quick-actions">
               <h2>Quick Actions</h2>
               <div className="action-buttons">
-                <button 
-                  className="action-btn primary"
-                  onClick={() => setShowCreateProject(true)}
-                >
-                  🚀 Launch New Project
-                </button>
+               
                 <button 
                   className="action-btn secondary"
                   onClick={() => setActiveTab('ai')}
@@ -411,71 +443,11 @@ useEffect(() => {
               </div>
             </div>
 
-            <div className="recent-projects">
-              <h2>Recent Projects</h2>
-              <div className="projects-grid">
-                {projects.slice(0, 2).map(project => (
-                  <div key={project.id} className="project-card">
-                    <h3>{project.title}</h3>
-                    <p>{project.description}</p>
-                    <div className="project-meta">
-                      <span className={`stage ${project.stage}`}>
-                        {project.stage}
-                      </span>
-                      <span className="category">{project.category}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
-          </div>
         )}
-
         {activeTab === 'projects' && (
-          <div className="projects-tab">
-            <div className="tab-header">
-              <h1>My Projects</h1>
-              <button 
-                className="create-project-btn"
-                onClick={() => setShowCreateProject(true)}
-              >
-                + New Project
-              </button>
-            </div>
-            
-            <div className="projects-list">
-              {projects.map(project => (
-                <div key={project.id} className="project-card detailed">
-                  <div className="project-header">
-                    <h3>{project.title}</h3>
-                    <span className={`stage ${project.stage}`}>
-                      {project.stage}
-                    </span>
-                  </div>
-                  <p className="project-description">{project.description}</p>
-                  <div className="project-details">
-                    <span className="category">{project.category}</span>
-                    <span className="date">
-                      Created: {project.createdAt.toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="project-skills">
-                    <h4>Skills Needed:</h4>
-                    <div className="skills">
-                      {project.skillsNeeded.map(skill => (
-                        <span key={skill} className="skill-tag">{skill}</span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="project-actions">
-                    <button className="btn-outline">Edit Project</button>
-                    <button className="btn-primary">View Details</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+  <Projects />
+)}
 
         {activeTab === 'network' && (
           <TeamFinder 
@@ -489,7 +461,6 @@ useEffect(() => {
           <div className="funding-tab">
             <FundingPortal 
               user={user}
-              projects={projects}
               onApplicationSubmit={handleApplicationSubmit}
             />
           </div>
@@ -504,6 +475,13 @@ useEffect(() => {
             <AIProposalAssistant />
           </div>
         )}
+
+        {activeTab === 'chat' && (
+          <div className="chat-tab">
+            <Chat currentUser={user} socket={socket} />
+          </div>
+        )}
+
    {activeTab === 'profile' && (
   <Profile user={user} />
 )}
@@ -576,77 +554,7 @@ useEffect(() => {
         </div>
       )}
 
-      {/* Create Project Modal */}
-      {showCreateProject && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <div className="modal-header">
-              <h2>Launch New Project</h2>
-              <button 
-                className="close-btn"
-                onClick={() => setShowCreateProject(false)}
-              >
-                ×
-              </button>
-            </div>
-            <form onSubmit={handleCreateProject} className="modal-form">
-              <div className="input-group">
-                <label>Project Title</label>
-                <input
-                  type="text"
-                  value={newProject.title}
-                  onChange={(e) => setNewProject(prev => ({...prev, title: e.target.value}))}
-                  placeholder="Enter project title"
-                  required
-                />
-              </div>
-              <div className="input-group">
-                <label>Description</label>
-                <textarea
-                  value={newProject.description}
-                  onChange={(e) => setNewProject(prev => ({...prev, description: e.target.value}))}
-                  placeholder="Describe your project..."
-                  rows={4}
-                  required
-                />
-              </div>
-              <div className="input-group">
-                <label>Category</label>
-                <input
-                  type="text"
-                  value={newProject.category}
-                  onChange={(e) => setNewProject(prev => ({...prev, category: e.target.value}))}
-                  placeholder="e.g., Education Tech, E-commerce"
-                  required
-                />
-              </div>
-              <div className="input-group">
-                <label>Current Stage</label>
-                <select
-                  value={newProject.stage}
-                  onChange={(e) => setNewProject(prev => ({...prev, stage: e.target.value as any}))}
-                >
-                  <option value="ideation">Ideation</option>
-                  <option value="prototype">Prototype</option>
-                  <option value="launched">Launched</option>
-                </select>
-              </div>
-              <div className="modal-actions">
-                <button 
-                  type="button" 
-                  className="btn-secondary"
-                  onClick={() => setShowCreateProject(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn-primary">
-                  Create Project
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 };

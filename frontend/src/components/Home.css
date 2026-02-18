@@ -17,15 +17,14 @@
 .header-content {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 2rem;
   display: flex;
-  align-items: center;
+  
   justify-content: space-between;
 }
 
 .logo {
   display: flex;
-  align-items: center;
+ 
   gap: 0.5rem;
   font-weight: 700;
   font-size: 1.5rem;
@@ -110,7 +109,7 @@
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid #ef4444;
   color: #ef4444;
-  padding: 0.5rem 1rem;
+ 
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -126,7 +125,7 @@
 .home-main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+ 
 }
 
 /* Dashboard */
@@ -856,6 +855,12 @@
 
 .chat-input button:hover {
   background: #0056b3;
+}
+
+/* Chat Tab */
+.chat-tab {
+  padding: 0;
+  height: calc(100vh - 100px);
 }
 
 /* Make sure the chat widget doesn't interfere with modals */

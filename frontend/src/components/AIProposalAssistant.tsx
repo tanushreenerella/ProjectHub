@@ -1,6 +1,8 @@
 // src/components/AIProposalAssistant.tsx
 import { useState } from 'react';
 import { AIService } from '../services/aiService';
+import AnalysisDisplay from './AnalysisDisplay';
+import { useAgentAnalysis } from '../hooks/useAgentAnalysis';
 import './AIProposalAssistant.css';
 
 const AIProposalAssistant: React.FC = () => {
@@ -14,36 +16,39 @@ const AIProposalAssistant: React.FC = () => {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'feedback' | 'names'>('feedback');
+  const [showAnalysis, setShowAnalysis] = useState(false);
+  const { analysis, loading: analysisLoading, error: analysisError, fetchAnalysis } = useAgentAnalysis();
+const handleAnalyzeIdea = async () => {
+  if (!idea.trim()) return;
 
-  const handleAnalyzeIdea = async () => {
-    if (!idea.trim()) return;
-    
-    setIsLoading(true);
-    setAiResponse(null);
+  setIsLoading(true);
+  setAiResponse(null);
 
-    try {
-      const [validation, businessNames] = await Promise.all([
-        AIService.validateIdea(idea),
-        AIService.generateBusinessName(idea)
-      ]);
+  try {
+    const data = await AIService.improveProposal(idea);
+    setAiResponse(data);
+  } catch (error) {
+    console.error('AI Service error:', error);
+    setAiResponse({
+      feedback: "Our AI mentor is currently busy. Please try again in a moment.",
+      score: 7,
+      strengths: ["Quick to implement", "Student-focused"],
+      improvements: ["Gather more user feedback", "Validate market size"],
+      businessNames: ["CampusHub", "UniStart", "StudentVenture"]
+    });
+  }
 
-      setAiResponse({
-        ...validation,
-        businessNames
-      });
-    } catch (error) {
-      console.error('AI Service error:', error);
-      setAiResponse({
-        feedback: "Our AI mentor is currently busy. Please try again in a moment.",
-        score: 7,
-        strengths: ["Quick to implement", "Student-focused"],
-        improvements: ["Gather more user feedback", "Validate market size"],
-        businessNames: ["CampusHub", "UniStart", "StudentVenture"]
-      });
-    }
-    setIsLoading(false);
-  };
+  setIsLoading(false);
+};
 
+const handleRunAgentAnalysis = async () => {
+  try {
+    setShowAnalysis(true);
+    await fetchAnalysis(idea, []);
+  } catch (error) {
+    console.error('Failed to run agent analysis:', error);
+  }
+};
   const formatFeedback = (text: string) => {
     return text.split('\n').map((line, index) => {
       if (line.includes('🚀') || line.includes('🎯') || line.includes('💡')) {
@@ -155,9 +160,41 @@ const AIProposalAssistant: React.FC = () => {
                 </div>
 
                 <div className="action-buttons">
-                  <button className="action-btn primary">
-                    📝 Create Project from This Idea
+                  <button 
+  className="action-btn primary"
+  onClick={async () => {
+    const token = localStorage.getItem("csh_token");
+
+    await fetch("http://127.0.0.1:5000/api/projects/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+  title: aiResponse?.businessNames?.[0] || idea.slice(0, 40),
+  description: aiResponse?.feedback,
+  category: "AI Generated",
+  stage: "ideation",
+  skillsNeeded: []
+})
+
+    });
+
+    alert("Project created from idea 🚀");
+  }}
+>
+  📝 Create Project from This Idea
+</button>
+
+                  <button 
+                    className="action-btn secondary"
+                    onClick={handleRunAgentAnalysis}
+                    disabled={analysisLoading}
+                  >
+                    {analysisLoading ? '🔄 Running Analysis...' : '🤖 Get Agent Analysis'}
                   </button>
+
                   <button className="action-btn secondary">
                     👥 Find Team Members
                   </button>
@@ -196,6 +233,22 @@ const AIProposalAssistant: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {showAnalysis && analysis && (
+        <AnalysisDisplay
+          evaluation={analysis.evaluation}
+          proposal={analysis.proposal}
+          teamSuggestions={analysis.teamSuggestions}
+          onClose={() => setShowAnalysis(false)}
+        />
+      )}
+
+      {analysisError && showAnalysis && (
+        <div className="analysis-error">
+          <p>Failed to load analysis: {analysisError}</p>
+          <button onClick={() => setShowAnalysis(false)}>Close</button>
         </div>
       )}
 

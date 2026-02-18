@@ -2,185 +2,160 @@
 const API_BASE = 'http://localhost:5000/api';
 
 export class AIService {
-  private static async callBackendAI(prompt: string): Promise<string> {
-    try {
-      const response = await fetch(`${API_BASE}/ai/improve-proposal`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idea: prompt })
-      });
+  private static async callBackendAI(prompt: string): Promise<any> {
+    const response = await fetch(`${API_BASE}/ai/improve-proposal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idea: prompt })
+    });
 
-      if (!response.ok) {
-        throw new Error(`Backend error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Handle both the new backend response and fallback to mock
-      if (data.feedback) {
-        return data.feedback;
-      } else if (data.error) {
-        throw new Error(data.error);
-      } else {
-        throw new Error('Unexpected response format');
-      }
-    } catch (error) {
-      console.error('Backend AI service failed, using mock:', error);
-      return this.getMockResponse(prompt);
-    }
-  }
-
-  private static getMockResponse(prompt: string): string {
-    // Your existing mock responses as fallback
-    const responses: { [key: string]: string } = {
-      'study platform': `🚀 **Elevator Pitch**: "StudySync - An AI-powered platform that creates personalized study plans and connects students with compatible study partners based on courses, learning styles, and schedules."
-
-🎯 **Problem-Solution**: 
-- **Problem**: Students struggle with consistent study habits and finding reliable study partners
-- **Solution**: AI-driven matching system + personalized study roadmap
-
-💡 **Key Value Propositions**:
-1. Smart matching algorithm for study partners
-2. AI-generated study schedules
-3. Progress tracking and analytics
-4. Campus-focused community`,
-
-      'marketplace': `🚀 **Elevator Pitch**: "CampusTrade - A peer-to-peer marketplace exclusively for college students to buy, sell, and trade textbooks, electronics, and campus essentials safely within their university ecosystem."
-
-🎯 **Problem-Solution**:
-- **Problem**: Students overpay for textbooks and struggle to sell used items
-- **Solution**: Campus-verified marketplace with secure transactions
-
-💡 **Key Value Propositions**:
-1. University email verification for safety
-2. Price comparison with campus bookstore
-3. Delivery coordination for large items
-4. Semester-based timing alerts`,
-
-      'food delivery': `🚀 **Elevator Pitch**: "DormEats - A late-night food delivery service operated by students for students, focusing on campus locations and student budget-friendly options when regular services are closed."
-
-🎯 **Problem-Solution**:
-- **Problem**: Limited late-night food options on campus
-- **Solution**: Student-run delivery with campus dining partnerships
-
-💡 **Key Value Propositions**:
-1. Student employment opportunities
-2. Late-night service (10 PM - 2 AM)
-3. Campus dining integration
-4. Affordable student pricing`
-    };
-
-    // Find the best matching response based on keywords
-    const lowerPrompt = prompt.toLowerCase();
-    let bestMatch = 'study platform'; // default
-    
-    if (lowerPrompt.includes('marketplace') || lowerPrompt.includes('buy') || lowerPrompt.includes('sell')) {
-      bestMatch = 'marketplace';
-    } else if (lowerPrompt.includes('food') || lowerPrompt.includes('delivery') || lowerPrompt.includes('eat')) {
-      bestMatch = 'food delivery';
-    } else if (lowerPrompt.includes('study') || lowerPrompt.includes('learn') || lowerPrompt.includes('education')) {
-      bestMatch = 'study platform';
+    if (!response.ok) {
+      throw new Error(`Backend error: ${response.status}`);
     }
 
-    return responses[bestMatch] || `Based on your idea "${prompt}", here's my analysis:
-
-🚀 **Refined Pitch**: Focus on solving a specific problem for college students with a clear, scalable solution.
-
-🎯 **Key Recommendations**:
-1. Clearly define your target user persona
-2. Identify your unique competitive advantage
-3. Outline a realistic monetization strategy
-4. Consider campus-specific challenges and opportunities
-
-💡 **Next Steps**:
-- Conduct market research with fellow students
-- Create a minimum viable product (MVP)
-- Test your assumptions with real users`;
-  }
-
-  static async improveProposal(idea: string): Promise<string> {
-    const prompt = `As a startup mentor, improve this college student's project idea and provide a structured pitch: ${idea}`;
-    return this.callBackendAI(prompt);
-  }
-
-  static async validateIdea(idea: string): Promise<{score: number; feedback: string; strengths: string[]; improvements: string[]}> {
-    // First get AI feedback from the backend
-    const feedback = await this.improveProposal(idea);
-    
-    // Generate scores and analysis based on the AI feedback
-    const strengths = [
-      "Solves a clear problem for students",
-      "Has campus-specific relevance", 
-      "Scalable business model potential",
-      "Low initial investment required",
-      "Clear target market",
-      "Innovative approach"
-    ];
-
-    const improvements = [
-      "Define target market more specifically",
-      "Research existing competitors",
-      "Outline customer acquisition strategy", 
-      "Plan for initial funding needs",
-      "Consider technical feasibility",
-      "Validate with user testing"
-    ];
-
-    // Calculate a more realistic score based on feedback content
-    let score = 7; // base score
-    if (feedback.includes('🚀') || feedback.includes('innovative') || feedback.includes('unique')) score += 1;
-    if (feedback.includes('clear') || feedback.includes('specific')) score += 1;
-    if (feedback.length > 500) score += 1; // More detailed feedback suggests better idea
-
+    const data = await response.json();
+    // Ensure response structure is valid
     return {
-      score: Math.min(score, 10), // Cap at 10
-      feedback,
-      strengths: this.shuffleArray(strengths).slice(0, 3),
-      improvements: this.shuffleArray(improvements).slice(0, 3)
+      feedback: data.feedback || '',
+      score: data.score || 6,
+      strengths: Array.isArray(data.strengths) ? data.strengths : [],
+      improvements: Array.isArray(data.improvements) ? data.improvements : [],
+      businessNames: Array.isArray(data.businessNames) ? data.businessNames : []
+    };
+  }
+
+  private static generateIntelligentFallback(idea: string): any {
+    const ideaLower = idea.toLowerCase();
+    
+    // Detect idea features
+    const isMarketplace = /marketplace|buy|sell|trade|exchange|market/.test(ideaLower);
+    const isEducation = /study|learn|teach|tutor|course|education|school/.test(ideaLower);
+    const isFood = /food|delivery|eat|restaurant|dining/.test(ideaLower);
+    const isSocial = /connect|network|friend|community|social|team|match/.test(ideaLower);
+    const isService = /service|help|support|clean|repair|task/.test(ideaLower);
+    
+    let category = 'General Student Startup';
+    if (isMarketplace) category = 'Peer-to-Peer Marketplace';
+    else if (isEducation) category = 'EdTech Platform';
+    else if (isFood) category = 'Food & Campus Service';
+    else if (isSocial) category = 'Social/Networking Platform';
+    else if (isService) category = 'Campus Service';
+    
+    // Generate contextual analysis
+    const strengthsMap: { [key: string]: string[] } = {
+      'Peer-to-Peer Marketplace': [
+        'Network effects can drive exponential growth',
+        'Monetization through commissions or premium is straightforward',
+        'Addresses real inefficiencies in current offerings'
+      ],
+      'EdTech Platform': [
+        'Massive addressable market of engaged students',
+        'High user retention due to academic incentives',
+        'Opportunity to improve learning outcomes'
+      ],
+      'Food & Campus Service': [
+        'Recurring revenue and daily user engagement',
+        'Low customer acquisition cost through campus word-of-mouth',
+        'Strong unit economics with direct to consumer'
+      ],
+      'Social/Networking Platform': [
+        'Viral growth potential through social features',
+        'Strong switching costs once community forms',
+        'Multiple monetization pathways'
+      ],
+      'Campus Service': [
+        'Solves real pain points students face',
+        'Potential for operational efficiency and scaling',
+        'Direct market validation through campus presence'
+      ]
+    };
+    
+    const improvementsMap: { [key: string]: string[] } = {
+      'Peer-to-Peer Marketplace': [
+        'Develop trust & safety features (verification, ratings, disputes)',
+        'Plan unit economics carefully - how do you cover transaction costs?',
+        'Consider supply-side vs demand-side growth strategy'
+      ],
+      'EdTech Platform': [
+        'Validate with actual students - does it solve their top pain point?',
+        'Define sustainable business model (B2B2C, B2B, or consumer subscription)',
+        'Build accessibility and compliance into core product'
+      ],
+      'Food & Campus Service': [
+        'Confirm food safety/compliance requirements for your jurisdiction',
+        'Secure partnerships with campus dining or local suppliers first',
+        'Plan delivery logistics and worker economics carefully'
+      ],
+      'Social/Networking Platform': [
+        'Differentiate clearly from existing platforms (niche, features, values)',
+        'Plan aggressive user retention - networks are all-or-nothing',
+        'Establish moderation policies before launch'
+      ],
+      'Campus Service': [
+        'Research campus policies and permissions needed',
+        'Develop go-to-market through student organizations',
+        'Validate demand with target user interviews first'
+      ]
+    };
+    
+    const strengthsList = strengthsMap[category] || strengthsMap['General Student Startup'];
+    const improvementsList = improvementsMap[category] || [
+      'Validate core assumptions with 10+ target customers',
+      'Create detailed MVP roadmap with must-have features',
+      'Develop 6-month financial projections and unit economics'
+    ];
+    
+    // Generate business names based on idea
+    let businessNames: string[] = [];
+    if (isMarketplace) {
+      businessNames = ['SwapHub', 'PeerMart', 'CampusExchange', 'QuickTrade', 'LocalHub'];
+    } else if (isEducation) {
+      businessNames = ['StudyMate', 'LearnHub', 'AcademySync', 'EduConnect', 'ClassFlow'];
+    } else if (isFood) {
+      businessNames = ['CampusEats', 'DormFresh', 'QuickBite', 'NightMunch', 'LocalFeast'];
+    } else if (isSocial) {
+      businessNames = ['CampusConnect', 'PeerLink', 'UniMate', 'TeamUp', 'SyncHub'];
+    } else {
+      businessNames = ['QuickService', 'CampusHelper', 'TaskFlow', 'HelpHub', 'ProService'];
+    }
+    
+    const score = 6 + Math.floor((idea.length - 50) / 100);
+    
+    return {
+      feedback: `🚀 **Idea**: Your proposal for a ${category} shows solid understanding of student pain points.\n\n🎯 **Opportunity**: There's real demand here. Students are actively seeking solutions to this problem.\n\n💡 **Next Steps**: Validate with 5-10 target users. What's their #1 problem you'd solve? Build MVP with only core features. Growth comes after proving product-market fit, not before.`,
+      score: Math.min(10, Math.max(5, score)),
+      strengths: strengthsList,
+      improvements: improvementsList,
+      businessNames: businessNames
     };
   }
 
   static async generateBusinessName(idea: string): Promise<string[]> {
-    // For now, keep this as mock - you can create a backend endpoint later
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const words = idea.split(' ').filter(word => word.length > 3);
-        const baseWord = words[0] || 'Campus';
-        
-        const names = [
-          `Campus${baseWord}`,
-          `Uni${baseWord}`,
-          `${baseWord}Sync`,
-          `Edu${baseWord}`,
-          `${baseWord}Hub`,
-          `Study${baseWord}`,
-          `${baseWord}Space`
-        ].filter(name => name.length > 0);
-        
-        resolve(this.shuffleArray(names).slice(0, 3));
-      }, 1000);
-    });
+    const data = await this.callBackendAI(idea);
+    return data.businessNames || [];
   }
 
-  // Helper function to shuffle arrays for random selection
-  private static shuffleArray<T>(array: T[]): T[] {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  }
-
-  // New method to check if backend is available
-  static async checkBackendHealth(): Promise<boolean> {
+  static async improveProposal(idea: string) {
     try {
-      const response = await fetch(`${API_BASE}/health`);
-      return response.ok;
+      if (!idea || idea.trim().length < 15) {
+        return {
+          feedback: 'Please provide a more detailed description of your idea (at least 15 characters).',
+          score: 0,
+          strengths: [],
+          improvements: ['Describe the problem', 'Explain your solution', 'Who is your target user?'],
+          businessNames: []
+        };
+      }
+      
+      const result = await this.callBackendAI(idea);
+      return result;
     } catch (error) {
-      return false;
+      console.error('AI Service error, using intelligent fallback:', error);
+      return this.generateIntelligentFallback(idea);
     }
+  }
+
+  static async analyzeIdea(idea: string) {
+    return await this.improveProposal(idea);
   }
 }

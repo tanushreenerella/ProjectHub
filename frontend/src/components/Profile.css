@@ -20,6 +20,75 @@
   font-size: 32px;
 }
 
+.profile-info {
+  flex: 1;
+}
+
+.bio {
+  margin-top: 12px;
+}
+
+.bio-text {
+  color: #cbd5e1;
+  line-height: 1.6;
+  max-width: 720px;
+}
+
+.bio-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 720px;
+}
+
+.bio-textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 96px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #374151;
+  background: #0b1220;
+  color: #e2e8f0;
+  font-size: 15px;
+  text-align: center;
+  box-shadow: inset 0 2px 6px rgba(2,12,27,0.6);
+}
+
+.bio-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn.save {
+  background: linear-gradient(180deg,#3b82f6,#2563eb);
+  color: white;
+  border-color: #2563eb;
+}
+
+.btn.cancel {
+  background: transparent;
+  color: #cbd5e1;
+  border: 1px solid #374151;
+}
+
+.btn.edit {
+  margin-left: 12px;
+  padding: 8px 12px;
+  background: transparent;
+  color: #e2e8f0;
+  border: 1px solid #374151;
+  border-radius: 8px;
+}
+
 .stats {
   display: flex;
   gap: 20px;

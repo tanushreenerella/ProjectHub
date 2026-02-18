@@ -6,11 +6,10 @@ import './FundingPortal.css';
 
 interface FundingPortalProps {
   user: { id: string };
-  projects: Project[];
   onApplicationSubmit: (application: FundingApplication) => void;
 }
 
-const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplicationSubmit }) => {
+const FundingPortal: React.FC<FundingPortalProps> = ({ user, onApplicationSubmit }) => {
   const [activeTab, setActiveTab] = useState<'opportunities' | 'applications' | 'investors'>('opportunities');
   const [opportunities, setOpportunities] = useState<FundingOpportunity[]>([]);
   const [applications, setApplications] = useState<FundingApplication[]>([]);
@@ -29,6 +28,30 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
     requestedAmount: 0,
     proposal: ''
   });
+  const [projects, setProjects] = useState<Project[]>([]);
+const token = localStorage.getItem("csh_token");
+
+useEffect(() => {
+  fetch("http://127.0.0.1:5000/api/projects/my", {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+    .then(res => res.json())
+    .then(data => {
+  const formatted = (data.projects || []).map((p: any) => ({
+    id: p._id,
+    title: p.title,
+    description: p.description,
+    category: p.category,
+    stage: p.stage,
+    skillsNeeded: p.skills_required,
+    createdAt: p.created_at
+  }));
+  setProjects(formatted);
+});
+
+}, []);
 
   useEffect(() => {
     loadData();
@@ -57,6 +80,32 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
       projectId: projects[0]?.id || '',
       requestedAmount: 10000,
       proposal: `I am applying for ${opportunity.title} to support my project.`
+    });
+    setShowApplicationModal(true);
+  };
+
+  const handleSeed = async () => {
+    setLoading(true);
+    try {
+      await FundingService.seedData();
+      // reload
+      await loadData();
+      alert('Seeded funding data successfully');
+    } catch (err) {
+      console.error('Seed failed', err);
+      alert('Seed failed. Check backend logs and ensure you are authenticated.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNewApplication = () => {
+    // Open modal without a preselected opportunity
+    setSelectedOpportunity(null);
+    setApplicationForm({
+      projectId: projects[0]?.id || '',
+      requestedAmount: 5000,
+      proposal: ''
     });
     setShowApplicationModal(true);
   };
@@ -108,6 +157,24 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
         <p>Discover funding opportunities and connect with investors</p>
       </div>
 
+      {/* Stats */}
+      <div className="funding-stats">
+        <div className="stat-card">
+          <h4>Total Opportunities</h4>
+          <p>{loading ? '—' : opportunities.length}</p>
+        </div>
+
+        <div className="stat-card">
+          <h4>Total Investors</h4>
+          <p>{loading ? '—' : investors.length}</p>
+        </div>
+
+        <div className="stat-card">
+          <h4>My Applications</h4>
+          <p>{loading ? '—' : applications.length}</p>
+        </div>
+      </div>
+
       {/* Navigation Tabs */}
       <div className="funding-tabs">
         <button 
@@ -121,6 +188,9 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
           onClick={() => setActiveTab('applications')}
         >
            📋 My Applications
+        </button>
+        <button className="seed-btn" onClick={handleSeed} title="Seed sample funding data (dev)">
+          ⚙️ Seed Data
         </button>
         <button 
           className={`tab ${activeTab === 'investors' ? 'active' : ''}`}
@@ -250,6 +320,10 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
             <p>Track your funding requests and their status</p>
           </div>
 
+          <div className="applications-actions">
+            <button className="btn-primary" onClick={handleNewApplication}>+ New Application</button>
+          </div>
+
           <div className="applications-list">
             {applications.map(application => {
               const opportunity = opportunities.find(o => o.id === application.opportunityId);
@@ -268,7 +342,7 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
                   <div className="app-details">
                     <div className="detail">
                       <strong>Requested Amount:</strong>
-                      <span>${application.requestedAmount.toLocaleString()}</span>
+                      <span>${(application.requestedAmount ?? 0).toLocaleString()}</span>
                     </div>
                     <div className="detail">
                       <strong>Submitted:</strong>
@@ -339,17 +413,17 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
 
                 <div className="focus-areas">
                   <strong>Focus Areas:</strong>
-                  <div className="focus-tags">
-                    {investor.focusAreas.map(area => (
+                    <div className="focus-tags">
+                    {(investor.focusAreas || []).map(area => (
                       <span key={area} className="focus-tag">{area}</span>
                     ))}
-                  </div>
+                    </div>
                 </div>
 
                 <div className="previous-investments">
                   <strong>Previous Investments:</strong>
                   <ul>
-                    {investor.previousInvestments.map(investment => (
+                    {(investor.previousInvestments || []).map(investment => (
                       <li key={investment}>✓ {investment}</li>
                     ))}
                   </ul>
@@ -378,11 +452,11 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
       )}
 
       {/* Application Modal */}
-      {showApplicationModal && selectedOpportunity && (
+      {showApplicationModal && (
         <div className="modal-overlay">
           <div className="application-modal">
             <div className="modal-header">
-              <h2>Apply for {selectedOpportunity.title}</h2>
+              <h2>Apply for {selectedOpportunity ? selectedOpportunity.title : 'New Application'}</h2>
               <button 
                 className="close-btn"
                 onClick={() => setShowApplicationModal(false)}
@@ -390,8 +464,25 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, projects, onApplica
                 ×
               </button>
             </div>
-
             <form onSubmit={handleSubmitApplication} className="modal-form">
+              {!selectedOpportunity && (
+                <div className="form-group">
+                  <label>Select Opportunity</label>
+                  <select
+                    value={applicationForm.projectId}
+                    onChange={(e) => {
+                      // set a temporary field to hold chosen opportunity id
+                      setSelectedOpportunity(opportunities.find(o => o.id === e.target.value) || null);
+                    }}
+                    required
+                  >
+                    <option value="">Choose an opportunity...</option>
+                    {opportunities.map(op => (
+                      <option key={op.id} value={op.id}>{op.title}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="form-group">
                 <label>Select Project</label>
                 <select

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./Profile.css";
 
 interface ProfileProps {
-  user: any;
+  user?: any;
 }
 
 const Profile: React.FC<ProfileProps> = () => {
@@ -26,9 +26,51 @@ const Profile: React.FC<ProfileProps> = () => {
       if (!res.ok) throw new Error("Unauthorized");
       return res.json();
     })
-    .then(data => {
-      setProfile(data);
-      setBio(data.bio || "");
+    .then(async data => {
+      // normalize user shape and ensure arrays exist
+      const normalized: any = {
+        id: data.id || data._id || data.user_id || '',
+        name: data.name || data.full_name || data.displayName || '',
+        email: data.email || data.user_email || '',
+        role: data.role || 'student',
+        bio: data.bio || '',
+        projects: data.projects || data.user_projects || [],
+        connections: data.connections || data.connection_ids || [],
+        skills: data.skills || data.skills_list || [],
+        interests: data.interests || data.interests_list || [],
+        lookingFor: data.lookingFor || data.looking_for || []
+      };
+
+      // If projects are only ids, try to fetch full project objects
+      try {
+        const token = localStorage.getItem('csh_token');
+        if (token) {
+          const res = await fetch('http://127.0.0.1:5000/api/projects/my', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const pj = await res.json();
+            const formatted = (pj.projects || []).map((p: any) => ({
+              id: p._id || p.id,
+              title: p.title,
+              description: p.description,
+              category: p.category,
+              stage: p.stage,
+              skillsNeeded: p.skills_required || p.skillsNeeded || [],
+              createdAt: p.created_at ? new Date(p.created_at) : (p.createdAt ? new Date(p.createdAt) : new Date())
+            }));
+            // If normalized.projects is empty or contains ids, replace with fetched projects
+            if (!normalized.projects.length || typeof normalized.projects[0] === 'string') {
+              normalized.projects = formatted;
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to fetch projects for profile', err);
+      }
+
+      setProfile(normalized);
+      setBio(normalized.bio || "");
     })
     .catch(err => console.error(err));
 }, []);
@@ -44,6 +86,8 @@ const Profile: React.FC<ProfileProps> = () => {
       body: JSON.stringify({ bio }),
     });
 
+    // update UI immediately
+    setProfile((prev: any) => ({ ...prev, bio }));
     setEditingBio(false);
   };
 
@@ -65,20 +109,26 @@ const Profile: React.FC<ProfileProps> = () => {
 
           <div className="bio">
             {editingBio ? (
-              <>
+              <div className="bio-edit">
                 <textarea
+                  className="bio-textarea"
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
+                  placeholder="Tell people about yourself — your role, skills, and what you're looking for."
+                  rows={4}
                 />
-                <button onClick={saveBio}>Save</button>
-              </>
+                <div className="bio-actions">
+                  <button className="btn save" onClick={saveBio}>Save</button>
+                  <button className="btn cancel" onClick={() => { setEditingBio(false); setBio(profile.bio || ''); }}>Cancel</button>
+                </div>
+              </div>
             ) : (
-              <>
-                <p>{profile.bio || "No bio added yet"}</p>
-                <button onClick={() => setEditingBio(true)}>
+              <div className="bio-view">
+                <p className="bio-text">{profile.bio || "No bio added yet"}</p>
+                <button className="btn edit" onClick={() => setEditingBio(true)}>
                   Edit Bio
                 </button>
-              </>
+              </div>
             )}
           </div>
         </div>

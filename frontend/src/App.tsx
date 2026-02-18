@@ -7,7 +7,6 @@ import Navbar from './components/Navbar'
 import Home from './components/Home'
 import SignIn from './components/SignIn'
 import Register from './components/Register'
-
 const App: React.FC = () => {
   // simple auth state (frontend-only). Real auth uses backend tokens.
   const [user, setUser] = useState<any>(() => {
@@ -18,6 +17,7 @@ const App: React.FC = () => {
       return null
     }
   })
+  const isLoggedIn = !!localStorage.getItem("csh_token");
 
   const handleLogin = (userObj: any) => {
     setUser(userObj)

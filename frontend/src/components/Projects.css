@@ -1,0 +1,89 @@
+.projects-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.projects-title {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.new-project-btn {
+  background: #111;
+  color: white;
+  padding: 12px 22px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: 0.2s;
+}
+
+.new-project-btn:hover {
+  background: #222;
+}
+
+.no-projects {
+  color: #9ca3af;
+  margin-bottom: 20px;
+}
+
+.create-form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.create-form input,
+.create-form select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #1f2937;
+  color: white;
+  min-width: 180px;
+}
+
+.create-form button {
+  padding: 10px 18px;
+  background: black;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.projects-list {
+  margin-top: 30px;
+}
+
+.project-card {
+  background: #1f2937;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 15px;
+  text-align: left;
+  border: 1px solid #374151;
+}
+
+.project-card h3 {
+  margin: 0 0 8px;
+}
+
+.project-card p {
+  margin: 0 0 10px;
+  color: #d1d5db;
+}
+
+.stage {
+  font-size: 12px;
+  padding: 4px 10px;
+  background: #2563eb;
+  border-radius: 6px;
+}
