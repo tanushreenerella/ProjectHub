@@ -2,13 +2,14 @@ from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 import pymongo
 from config import MONGO_URI
+from openai import OpenAI
 import os
 from groq import Groq
 jwt = JWTManager()
 socketio = SocketIO(cors_allowed_origins="*", async_mode="threading")
 
 mongo_client = pymongo.MongoClient(MONGO_URI)
-db = mongo_client.get_default_database()
+db = mongo_client["projecthub"]
 
 users_collection = db.get_collection("users")
 projects_collection = db.get_collection("projects")
