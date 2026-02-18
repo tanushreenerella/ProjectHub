@@ -46,7 +46,7 @@ export const useAgentAnalysis = (): UseAgentAnalysisReturn => {
       setAnalysis({
         evaluation: data.evaluation || "No evaluation available",
         proposal: data.proposal || "No proposal available",
-        teamSuggestions: data.team_suggestions || data.teamSuggestions || "No team suggestions available"
+        teamSuggestions: data.teamSuggestions || data.teamSuggestions || "No team suggestions available"
       });
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch analysis';

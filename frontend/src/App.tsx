@@ -17,7 +17,6 @@ const App: React.FC = () => {
       return null
     }
   })
-  const isLoggedIn = !!localStorage.getItem("csh_token");
 
   const handleLogin = (userObj: any) => {
     setUser(userObj)

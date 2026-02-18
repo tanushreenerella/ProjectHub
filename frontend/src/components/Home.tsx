@@ -33,12 +33,12 @@ const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
   'dashboard' | 'projects' | 'network' | 'ai' | 'funding' | 'chat' | 'profile'
 >('dashboard');
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [connections, setConnections] = useState<string[]>([]);
+  const [, setConnections] = useState<string[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [fundingApplications, setFundingApplications] = useState<FundingApplication[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
    const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messages, setMessages] = useState<{ [conversationId: string]: Message[] }>({});
+  const [messages] = useState<{ [conversationId: string]: Message[] }>({});
  const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
 
   const [currentConversationId, setCurrentConversationId] =

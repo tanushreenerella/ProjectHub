@@ -3,10 +3,17 @@ import type { FundingOpportunity, FundingApplication, Investor } from '../types/
 
 const API_BASE = import.meta.env.DEV ? 'http://localhost:5000/api/funding' : '/api/funding';
 
-function authHeader() {
+function authHeader(): HeadersInit {
   const token = localStorage.getItem('csh_token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  const headers: HeadersInit = {};
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return headers;
 }
+
 
 export class FundingService {
   static async getFundingOpportunities(filters?: { category?: string; stage?: string; search?: string; }): Promise<FundingOpportunity[]> {
