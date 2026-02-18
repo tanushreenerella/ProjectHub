@@ -38,30 +38,24 @@ def get_my_projects():
 
     projects = list(projects_collection.find({
         "owner_id": ObjectId(user_id)
-    }))
+    }).sort("created_at", -1))
 
     for p in projects:
         p["_id"] = str(p["_id"])
         p["owner_id"] = str(p["owner_id"])
+        p["team_members"] = [str(x) for x in p.get("team_members", [])]
+        p["skillsNeeded"] = p.get("skills_required", [])
 
     return jsonify({"projects": projects})
 @project_bp.route("/all", methods=["GET"])
 @jwt_required()
 def get_all_projects():
-    projects = list(projects_collection.find())
+    projects = list(projects_collection.find().sort("created_at", -1))
 
     for p in projects:
         p["_id"] = str(p["_id"])
         p["owner_id"] = str(p["owner_id"])
-
-    return jsonify({"projects": projects})
-@project_bp.route("/all", methods=["GET"])
-@jwt_required()
-def get_all_projects():
-    projects = list(projects_collection.find())
-
-    for p in projects:
-        p["_id"] = str(p["_id"])
-        p["owner_id"] = str(p["owner_id"])
+        p["team_members"] = [str(x) for x in p.get("team_members", [])]
+        p["skillsNeeded"] = p.get("skills_required", [])
 
     return jsonify({"projects": projects})
