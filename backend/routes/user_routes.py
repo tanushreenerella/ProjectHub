@@ -4,7 +4,6 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from bson import ObjectId
 from extensions import users_collection, db
 from datetime import datetime
-from utils.notifications import create_notification
 
 users_bp = Blueprint("users", __name__)
 from flask_jwt_extended import get_jwt_identity
@@ -122,7 +121,6 @@ def send_connection():
     # Check if recipient exists
     try:
         recipient = users_collection.find_one({"_id": ObjectId(to_user_id)})
-        sender = users_collection.find_one({"_id": ObjectId(from_user_id)})
         print(f"Recipient found: {recipient is not None}")
     except Exception as e:
         print(f"ERROR: Invalid user ID format - {e}")
@@ -157,25 +155,7 @@ def send_connection():
     result = connections_collection.insert_one(request_obj)
     print(f"SUCCESS: Connection request saved with ID: {result.inserted_id}")
     print("=== END DEBUG ===\n")
-    sender_name = sender.get("name", "Someone") if sender else "Someone"
-    recipient_name = recipient.get("name", "someone") if recipient else "someone"
-    create_notification(
-        to_user_id,
-        "connection_request_received",
-        "New connection request",
-        f"{sender_name} sent you a connection request",
-        actor_id=from_user_id,
-        actor_name=sender_name
-    )
-    create_notification(
-        from_user_id,
-        "connection_request_sent",
-        "Connection request sent",
-        f"You sent a connection request to {recipient_name}",
-        actor_id=to_user_id,
-        actor_name=recipient_name
-    )
-
+    
     return jsonify({
         "msg": "Connection request sent",
         "request_id": str(result.inserted_id)
@@ -266,27 +246,7 @@ def accept_connection(request_id):
         {"_id": conn_request["from_user_id"]},
         {"$addToSet": {"connections": str(user_id)}}
     )
-    accepter = users_collection.find_one({"_id": ObjectId(user_id)})
-    requester = users_collection.find_one({"_id": conn_request["from_user_id"]})
-    accepter_name = accepter.get("name", "Someone") if accepter else "Someone"
-    requester_name = requester.get("name", "Someone") if requester else "Someone"
-    create_notification(
-        str(conn_request["from_user_id"]),
-        "connection_request_accepted",
-        "Connection request accepted",
-        f"{accepter_name} accepted your connection request",
-        actor_id=user_id,
-        actor_name=accepter_name
-    )
-    create_notification(
-        user_id,
-        "connection_connected",
-        "You are now connected",
-        f"You are now connected with {requester_name}",
-        actor_id=str(conn_request["from_user_id"]),
-        actor_name=requester_name
-    )
-
+    
     return jsonify({"msg": "Connection accepted"})
 
 @users_bp.route("/connection-requests/<request_id>/reject", methods=["POST"])
@@ -308,17 +268,6 @@ def reject_connection(request_id):
         {"_id": ObjectId(request_id)},
         {"$set": {"status": "rejected", "updated_at": datetime.utcnow()}}
     )
-    requester = users_collection.find_one({"_id": conn_request["from_user_id"]})
-    rejecter = users_collection.find_one({"_id": ObjectId(user_id)})
-    if requester:
-        create_notification(
-            str(conn_request["from_user_id"]),
-            "connection_request_rejected",
-            "Connection request declined",
-            f"{rejecter.get('name', 'A user') if rejecter else 'A user'} declined your connection request",
-            actor_id=user_id,
-            actor_name=rejecter.get("name", "") if rejecter else ""
-        )
     
     return jsonify({"msg": "Connection rejected"})
 

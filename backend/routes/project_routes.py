@@ -162,4 +162,3 @@ def get_all_projects():
         p["skillsNeeded"] = p.get("skills_required", [])
 
     return jsonify({"projects": projects})
-
