@@ -1,1 +1,5 @@
-Pppt link-https://docs.google.com/presentation/d/16t6vKY72oM5WeKogxU_mBXy5J1Q5HNyf/edit?slide=id.p1#slide=id.p1
+College Startup & Project Ecosystem Platform
+
+Project Hub is a web-based platform designed to help college students build, collaborate, fund, and launch startup or academic project ideas.
+
+It connects students with teammates, mentors, and funding opportunities — all in one place.
