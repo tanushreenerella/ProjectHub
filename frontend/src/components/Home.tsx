@@ -50,7 +50,7 @@ const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
   const token = localStorage.getItem("csh_token");
   if (!token) return;
 
-  const s = io("http://localhost:5000", {
+  const s = io("", {
     query: { token }
   });
 
@@ -220,7 +220,7 @@ useEffect(() => {
     return;
   }
 
-  fetch("http://localhost:5000/api/conversations", {
+  fetch("https://projecthub-xnth.onrender.com/api/conversations", {
     headers: {
       Authorization: `Bearer ${token}`
     }

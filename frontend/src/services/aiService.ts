@@ -1,5 +1,5 @@
 // src/services/aiService.ts
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://projecthub-xnth.onrender.com/api';
 
 export class AIService {
   private static async callBackendAI(prompt: string): Promise<any> {

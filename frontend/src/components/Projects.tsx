@@ -103,7 +103,7 @@ const runAgents = async (project: Project) => {
   const token = localStorage.getItem("csh_token");
   
   try {
-    const res = await fetch("http://localhost:5000/api/agents/startup", {
+    const res = await fetch("https://projecthub-xnth.onrender.com/api/agents/startup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
