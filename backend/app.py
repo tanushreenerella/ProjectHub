@@ -10,8 +10,6 @@ from routes.project_routes import project_bp
 from routes.conversation_routes import conversation_bp
 from routes.user_routes import users_bp
 from flask import Flask, jsonify, request
-
-
 app = Flask(__name__)
 
 # LOAD EVERYTHING FROM config.py
@@ -24,7 +22,6 @@ jwt.init_app(app)
 socketio.init_app(app)
 
 # Import socket handlers to register them with socketio
-import sockets.chat
 
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(ai_bp, url_prefix="/api/ai")
@@ -34,6 +31,10 @@ app.register_blueprint(conversation_bp, url_prefix="/api")
 app.register_blueprint(users_bp, url_prefix="/api/users")
 from routes.funding_routes import funding_bp
 app.register_blueprint(funding_bp, url_prefix="/api/funding")
+
+@app.route("/")
+def home():
+    return {"message": "ProjectHub backend is running 🚀"}
 @app.route("/api/agents/startup", methods=["POST"])
 def run_agents():
     data = request.json
