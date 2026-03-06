@@ -43,5 +43,8 @@ def run_agents():
     result = startup_ai_orchestrator(description, users)
 
     return jsonify(result)
+import os
+
 if __name__ == "__main__":
-    socketio.run(app, debug=False, use_reloader=False)
+    port = int(os.environ.get("PORT", 10000))
+    socketio.run(app, host="0.0.0.0", port=port, debug=False)
