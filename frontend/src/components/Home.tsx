@@ -83,7 +83,7 @@ useEffect(() => {
       }
     })();
 
-    fetch("http://127.0.0.1:5000/api/projects/my", {
+    fetch("https://projecthub-xnth.onrender.com/api/projects/my", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -106,7 +106,7 @@ useEffect(() => {
   
           // Get 
           console.log('Fetching connections...');
-          const connectionsRes = await fetch('http://127.0.0.1:5000/api/users/connections', {
+          const connectionsRes = await fetch('https://projecthub-xnth.onrender.com/api/users/connections', {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -120,7 +120,7 @@ useEffect(() => {
          setConnections(connectedUsers);
           // Get pending connection requests (both sent and received)
           console.log('Fetching connection requests...');
-          const requestsRes = await fetch('http://127.0.0.1:5000/api/users/connection-requests', {
+          const requestsRes = await fetch('https://projecthub-xnth.onrender.com/api/users/connection-requests', {
             headers: { Authorization: `Bearer ${token}` }
           });
           

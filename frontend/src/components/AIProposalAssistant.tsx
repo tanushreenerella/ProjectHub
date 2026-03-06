@@ -165,7 +165,7 @@ const handleRunAgentAnalysis = async () => {
   onClick={async () => {
     const token = localStorage.getItem("csh_token");
 
-    await fetch("http://127.0.0.1:5000/api/projects/", {
+    await fetch("https://projecthub-xnth.onrender.com/api/projects/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

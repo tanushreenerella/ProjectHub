@@ -32,7 +32,7 @@ const FundingPortal: React.FC<FundingPortalProps> = ({ user, onApplicationSubmit
 const token = localStorage.getItem("csh_token");
 
 useEffect(() => {
-  fetch("http://127.0.0.1:5000/api/projects/my", {
+  fetch("https://projecthub-xnth.onrender.com/api/projects/my", {
     headers: {
       Authorization: `Bearer ${token}`
     }

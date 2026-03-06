@@ -39,7 +39,7 @@ export default function Projects() {
   useEffect(() => {
     if (!token) return;
 
-    fetch("http://127.0.0.1:5000/api/projects/my", {
+    fetch("https://projecthub-xnth.onrender.com/api/projects/my", {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -54,7 +54,7 @@ export default function Projects() {
   const createProject = async (e: any) => {
     e.preventDefault();
 
-    const res = await fetch("http://127.0.0.1:5000/api/projects/", {
+    const res = await fetch("https://projecthub-xnth.onrender.com/api/projects/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

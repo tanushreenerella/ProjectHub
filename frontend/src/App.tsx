@@ -51,7 +51,7 @@ const onRegisterClick = () => window.location.assign('#/register')
   lookingFor: userData.lookingFor,
   bio: userData.bio
 }
-      const resp = await axios.post('http://127.0.0.1:5000/api/auth/register', payload)
+      const resp = await axios.post('https://projecthub-xnth.onrender.com/api/auth/register', payload)
       const { access_token, user_id } = resp.data || {}
       const userObj = { id: user_id || Math.random().toString(36).slice(2, 9), name: userData.name || (userData.email || '').split('@')[0], email: userData.email, role: userData.role || 'student' }
       if (access_token) localStorage.setItem('csh_token', access_token)
@@ -65,7 +65,7 @@ const onRegisterClick = () => window.location.assign('#/register')
  // SignIn handler (calls backend)
   const handleSignIn = async (email: string, password: string) => {
     try {
-      const resp = await axios.post('http://127.0.0.1:5000/api/auth/login', { email, password })
+      const resp = await axios.post('https://projecthub-xnth.onrender.com/api/auth/login', { email, password })
       const { access_token, user_id } = resp.data || {}
       // Build a minimal frontend user object from email; backend currently returns id + token
       const userObj = { id: user_id || Math.random().toString(36).slice(2, 9), name: email.split('@')[0], email, role: 'student' }

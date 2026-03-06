@@ -17,7 +17,7 @@ const Profile: React.FC<ProfileProps> = () => {
     return;
   }
 
-  fetch(`http://127.0.0.1:5000/api/users/me`, {
+  fetch(`https://projecthub-xnth.onrender.com/api/users/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -45,7 +45,7 @@ const Profile: React.FC<ProfileProps> = () => {
       try {
         const token = localStorage.getItem('csh_token');
         if (token) {
-          const res = await fetch('http://127.0.0.1:5000/api/projects/my', {
+          const res = await fetch('https://projecthub-xnth.onrender.com/api/projects/my', {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (res.ok) {
@@ -77,7 +77,7 @@ const Profile: React.FC<ProfileProps> = () => {
   const saveBio = async () => {
     const token = localStorage.getItem("csh_token");
 
-    await fetch("http://127.0.0.1:5000/api/users/update-bio", {
+    await fetch("https://projecthub-xnth.onrender.com/api/users/update-bio", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
