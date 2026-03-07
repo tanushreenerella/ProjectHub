@@ -1,7 +1,6 @@
 // src/services/fundingService.ts
 import type { FundingOpportunity, FundingApplication, Investor } from '../types/index.ts';
-
-const API_BASE = import.meta.env.DEV ? 'https://projecthub-xnth.onrender.com/api/funding' : '/api/funding';
+const API_BASE = "https://projecthub-xnth.onrender.com/api/funding";
 
 function authHeader(): HeadersInit {
   const token = localStorage.getItem('csh_token');
