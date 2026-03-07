@@ -8,9 +8,9 @@ from routes.ai_routes import ai_bp
 from routes.idea_routes import idea_bp
 from routes.project_routes import project_bp
 from routes.conversation_routes import conversation_bp
+from routes.task_routes import tasks_bp
 from routes.user_routes import users_bp
 from flask import Flask, jsonify, request
-from routes.task_routes import tasks_bp
 from routes.funding_routes import funding_bp
 app = Flask(__name__)
 
