@@ -10,6 +10,8 @@ from routes.project_routes import project_bp
 from routes.conversation_routes import conversation_bp
 from routes.user_routes import users_bp
 from flask import Flask, jsonify, request
+from routes.task_routes import tasks_bp
+from routes.funding_routes import funding_bp
 app = Flask(__name__)
 
 # LOAD EVERYTHING FROM config.py
@@ -29,7 +31,8 @@ app.register_blueprint(idea_bp, url_prefix="/api/ideas")
 app.register_blueprint(project_bp, url_prefix="/api/projects")
 app.register_blueprint(conversation_bp, url_prefix="/api")
 app.register_blueprint(users_bp, url_prefix="/api/users")
-from routes.funding_routes import funding_bp
+app.register_blueprint(tasks_bp, url_prefix="/api/tasks")
+
 app.register_blueprint(funding_bp, url_prefix="/api/funding")
 
 @app.route("/")
