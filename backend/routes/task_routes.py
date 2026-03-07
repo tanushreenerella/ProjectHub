@@ -2,11 +2,9 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from bson.objectid import ObjectId
 from datetime import datetime
-from extensions import db
+from extensions import tasks_collection
 
 tasks_bp = Blueprint("tasks", __name__)
-
-tasks_collection = db["tasks"]
 
 
 # Create task

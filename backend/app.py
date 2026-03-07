@@ -32,7 +32,6 @@ app.register_blueprint(project_bp, url_prefix="/api/projects")
 app.register_blueprint(conversation_bp, url_prefix="/api")
 app.register_blueprint(users_bp, url_prefix="/api/users")
 app.register_blueprint(tasks_bp, url_prefix="/api/tasks")
-
 app.register_blueprint(funding_bp, url_prefix="/api/funding")
 
 @app.route("/")
