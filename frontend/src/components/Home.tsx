@@ -50,9 +50,9 @@ const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
   const token = localStorage.getItem("csh_token");
   if (!token) return;
 
-  const s = io("", {
-    query: { token }
-  });
+  const s = io("https://projecthub-xnth.onrender.com", {
+  query: { token }
+});
 
   setSocket(s);
 
