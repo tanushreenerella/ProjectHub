@@ -1,66 +1,60 @@
-from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from bson.objectid import ObjectId
-from datetime import datetime
-from extensions import tasks_collection
 
-tasks_bp = Blueprint("tasks", __name__)
+from flask_cors import CORS
+from config import SECRET_KEY, JWT_SECRET_KEY
+from extensions import jwt, socketio
+from agents.orchestrator import startup_ai_orchestrator
+from routes.auth_routes import auth_bp
+from routes.ai_routes import ai_bp
+from routes.idea_routes import idea_bp
+from routes.project_routes import project_bp
+from routes.conversation_routes import conversation_bp
+from routes.task_routes import tasks_bp
+from routes.user_routes import users_bp
+from flask import Flask, jsonify, request
+from routes.funding_routes import funding_bp
+app = Flask(__name__)
+
+# LOAD EVERYTHING FROM config.py
+app.config.from_object("config")
+
+CORS(
+    app,
+    supports_credentials=True,
+    origins=[
+        "http://localhost:5173",
+        "https://tanushreenerella.github.io/ProjectHub/"
+    ]
+)
 
 
-# Create task
-@tasks_bp.route("/", methods=["POST","OPTIONS"])
-@jwt_required()
-def create_task():
-    user_id = get_jwt_identity()
+jwt.init_app(app)
+socketio.init_app(app)
+
+# Import socket handlers to register them with socketio
+
+app.register_blueprint(auth_bp, url_prefix="/api/auth")
+app.register_blueprint(ai_bp, url_prefix="/api/ai")
+app.register_blueprint(idea_bp, url_prefix="/api/ideas")
+app.register_blueprint(project_bp, url_prefix="/api/projects")
+app.register_blueprint(conversation_bp, url_prefix="/api")
+app.register_blueprint(users_bp, url_prefix="/api/users")
+app.register_blueprint(tasks_bp, url_prefix="/api/tasks")
+app.register_blueprint(funding_bp, url_prefix="/api/funding")
+
+@app.route("/")
+def home():
+    return {"message": "ProjectHub backend is running 🚀"}
+@app.route("/api/agents/startup", methods=["POST"])
+def run_agents():
     data = request.json
+    description = data.get("description")
+    users = data.get("users")
 
-    task = {
-        "project_id": ObjectId(data["project_id"]),
-        "title": data["title"],
-        "status": "todo",
-        "created_by": ObjectId(user_id),
-        "created_at": datetime.utcnow()
-    }
+    result = startup_ai_orchestrator(description, users)
 
-    tid = tasks_collection.insert_one(task).inserted_id
+    return jsonify(result)
+import os
 
-    return jsonify({
-        "msg": "Task created",
-        "task_id": str(tid)
-    })
-
-
-# Get tasks for a project
-@tasks_bp.route("/project/<project_id>", methods=["GET","OPTIONS"])
-@jwt_required()
-def get_tasks(project_id):
-
-    tasks = list(tasks_collection.find({
-        "project_id": ObjectId(project_id)
-    }))
-
-    result = []
-
-    for t in tasks:
-        result.append({
-            "id": str(t["_id"]),
-            "title": t["title"],
-            "status": t["status"]
-        })
-
-    return jsonify({"tasks": result})
-
-
-# Update task status
-@tasks_bp.route("/<task_id>/status", methods=["PUT","OPTIONS"])
-@jwt_required()
-def update_status(task_id):
-
-    data = request.json
-
-    tasks_collection.update_one(
-        {"_id": ObjectId(task_id)},
-        {"$set": {"status": data["status"]}}
-    )
-
-    return jsonify({"msg": "Task updated"})
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 10000))
+    socketio.run(app, host="0.0.0.0", port=port, debug=False, allow_unsafe_werkzeug=True)
