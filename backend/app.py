@@ -17,7 +17,14 @@ app = Flask(__name__)
 # LOAD EVERYTHING FROM config.py
 app.config.from_object("config")
 
-CORS(app, supports_credentials=True)
+CORS(
+    app,
+    supports_credentials=True,
+    origins=[
+        "http://localhost:5173",
+        "https://tanushreenerella.github.io/ProjectHub/"
+    ]
+)
 
 
 jwt.init_app(app)
