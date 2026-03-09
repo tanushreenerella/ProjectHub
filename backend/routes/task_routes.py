@@ -8,7 +8,7 @@ tasks_bp = Blueprint("tasks", __name__)
 
 
 # Create task
-@tasks_bp.route("/", methods=["POST"])
+@tasks_bp.route("/", methods=["POST","OPTIONS"])
 @jwt_required()
 def create_task():
     user_id = get_jwt_identity()
@@ -31,7 +31,7 @@ def create_task():
 
 
 # Get tasks for a project
-@tasks_bp.route("/project/<project_id>", methods=["GET"])
+@tasks_bp.route("/project/<project_id>", methods=["GET","OPTIONS"])
 @jwt_required()
 def get_tasks(project_id):
 
@@ -52,7 +52,7 @@ def get_tasks(project_id):
 
 
 # Update task status
-@tasks_bp.route("/<task_id>/status", methods=["PUT"])
+@tasks_bp.route("/<task_id>/status", methods=["PUT","OPTIONS"])
 @jwt_required()
 def update_status(task_id):
 
