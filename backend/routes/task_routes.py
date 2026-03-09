@@ -9,6 +9,7 @@ tasks_bp = Blueprint("tasks", __name__)
 
 # Create task
 @tasks_bp.route("/", methods=["POST", "OPTIONS"])
+@jwt_required()
 def create_task():
 
     if request.method == "OPTIONS":
