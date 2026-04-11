@@ -1,4 +1,6 @@
-
+import eventlet
+eventlet.monkey_patch()
+# THEN everything else
 from flask_cors import CORS
 from config import SECRET_KEY, JWT_SECRET_KEY
 from extensions import jwt, socketio
@@ -15,6 +17,7 @@ from routes.funding_routes import funding_bp
 from routes.notification_routes import notifications_bp
 from apscheduler.schedulers.background import BackgroundScheduler
 from jobs.reminders import send_inactivity_reminders
+
 import atexit
 import os
 app = Flask(__name__)
@@ -33,8 +36,7 @@ CORS(
 
 
 jwt.init_app(app)
-socketio.init_app(app)
-
+socketio.init_app(app, cors_allowed_origins="*")
 # Import socket handlers to register them with socketio
 import sockets.chat  # noqa: F401
 
