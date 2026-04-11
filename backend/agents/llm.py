@@ -1,7 +1,7 @@
-from openai import OpenAI
+from google import genai
 import os
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY", ""))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 # Mock responses for presentation demo
 MOCK_RESPONSES = {
@@ -69,21 +69,16 @@ MOCK_RESPONSES = {
 def run_llm(prompt: str):
     """Run LLM query with fallback to mock responses for presentation"""
     try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You are a startup expert AI assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.7,
-            max_tokens=500
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",
+            contents=f"You are a startup expert AI assistant.\n\n{prompt}"
         )
-        return response.choices[0].message.content
+
+        return response.text
+
     except Exception as e:
-        # Fallback to mock response when API fails
         print(f"[LLM] API Error (using mock response): {str(e)}")
-        
-        # Return appropriate mock based on prompt content
+
         if "proposal" in prompt.lower():
             return MOCK_RESPONSES["proposal"]
         elif "team" in prompt.lower():
@@ -91,5 +86,4 @@ def run_llm(prompt: str):
         elif "evaluat" in prompt.lower():
             return MOCK_RESPONSES["evaluation"]
         else:
-            return MOCK_RESPONSES["proposal"]  # default fallback
-
+            return MOCK_RESPONSES["proposal"]
