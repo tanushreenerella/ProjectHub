@@ -1,6 +1,3 @@
-import eventlet
-eventlet.monkey_patch()
-# THEN everything else
 from flask_cors import CORS
 from config import SECRET_KEY, JWT_SECRET_KEY
 from extensions import jwt, socketio
