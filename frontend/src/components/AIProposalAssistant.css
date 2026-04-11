@@ -548,3 +548,110 @@
 .analysis-error button:hover {
   background: #a82828;
 }
+.ai-mode-tabs {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.ai-primary-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.proposal-coach-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.assistant-mode-summary {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(15, 24, 44, 0.58);
+  border: 1px solid rgba(99, 134, 200, 0.14);
+}
+
+.assistant-mode-summary p {
+  margin: 0;
+  color: #b8c8e6;
+  line-height: 1.55;
+}
+
+.next-step-card p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.proposal-draft-section {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid rgba(99, 134, 200, 0.18);
+  border-radius: 18px;
+  background: rgba(15, 24, 44, 0.72);
+}
+
+.proposal-draft-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.proposal-draft-header h4 {
+  margin: 0 0 6px;
+}
+
+.proposal-draft-header p {
+  margin: 0;
+  color: #9bb0d3;
+}
+
+.proposal-draft-textarea {
+  width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(99, 134, 200, 0.18);
+  background: rgba(8, 14, 28, 0.92);
+  color: #eaf1ff;
+  padding: 16px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.proposal-draft-placeholder {
+  padding: 18px;
+  border-radius: 14px;
+  background: rgba(8, 14, 28, 0.6);
+  color: #9bb0d3;
+}
+
+.copilot-rag-panel {
+  margin-top: 24px;
+  padding: 24px;
+  border-radius: 20px;
+  background: rgba(12, 20, 39, 0.72);
+  border: 1px solid rgba(94, 146, 255, 0.16);
+}
+
+.copilot-result-section {
+  margin-top: 20px;
+  display: grid;
+  gap: 18px;
+}
+
+.copilot-result-section .analysis-card p,
+.copilot-result-section .analysis-card li {
+  color: #c8d4ea;
+  line-height: 1.6;
+}
+
+.copilot-result-section ul {
+  margin: 0;
+  padding-left: 18px;
+}

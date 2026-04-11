@@ -17,7 +17,7 @@ const Profile: React.FC<ProfileProps> = () => {
     return;
   }
 
-  fetch(`https://projecthub-xnth.onrender.com/api/users/me`, {
+  fetch(`${import.meta.env.VITE_API_URL}/api/users/me`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -45,7 +45,7 @@ const Profile: React.FC<ProfileProps> = () => {
       try {
         const token = localStorage.getItem('csh_token');
         if (token) {
-          const res = await fetch('https://projecthub-xnth.onrender.com/api/projects/my', {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/projects/my`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (res.ok) {
@@ -77,7 +77,7 @@ const Profile: React.FC<ProfileProps> = () => {
   const saveBio = async () => {
     const token = localStorage.getItem("csh_token");
 
-    await fetch("https://projecthub-xnth.onrender.com/api/users/update-bio", {
+    await fetch(`${import.meta.env.VITE_API_URL}/api/users/update-bio`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

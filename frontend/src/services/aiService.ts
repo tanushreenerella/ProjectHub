@@ -1,6 +1,5 @@
 // src/services/aiService.ts
-const API_BASE = 'https://projecthub-xnth.onrender.com/api';
-
+const API_BASE = `${import.meta.env.VITE_API_URL}/api`;
 export class AIService {
   private static async callBackendAI(prompt: string): Promise<any> {
     const response = await fetch(`${API_BASE}/ai/improve-proposal`, {
@@ -23,6 +22,25 @@ export class AIService {
       businessNames: Array.isArray(data.businessNames) ? data.businessNames : []
     };
   }
+  static async analyzeProjectCopilot(projectId: string) {
+  const token = localStorage.getItem("csh_token");
+
+  const response = await fetch(`${API_BASE}/ai/project-copilot`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ project_id: projectId })
+  });
+
+  if (!response.ok) {
+    throw new Error(`Project copilot failed: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
 
   private static generateIntelligentFallback(idea: string): any {
     const ideaLower = idea.toLowerCase();

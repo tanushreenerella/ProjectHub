@@ -26,7 +26,7 @@ export const useAgentAnalysis = (): UseAgentAnalysisReturn => {
 
     try {
       const token = localStorage.getItem('csh_token');
-      const response = await fetch('https://projecthub-xnth.onrender.com/api/agents/startup', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/agents/startup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,10 +44,11 @@ export const useAgentAnalysis = (): UseAgentAnalysisReturn => {
 
       const data: AgentAnalysis = await response.json();
       setAnalysis({
-        evaluation: data.evaluation || "No evaluation available",
-        proposal: data.proposal || "No proposal available",
-        teamSuggestions: data.teamSuggestions || data.teamSuggestions || "No team suggestions available"
-      });
+  evaluation: data.evaluation || "No evaluation available",
+  proposal: data.proposal || "No proposal available",
+  teamSuggestions: (data as any).team_suggestions || data.teamSuggestions || "No team suggestions available"
+});
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch analysis';
       setError(errorMessage);

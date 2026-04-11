@@ -1,9 +1,8 @@
-from flask_socketio import emit, join_room
+from flask_socketio import emit, join_room, leave_room
 from datetime import datetime
 from bson import ObjectId
 from extensions import socketio, messages_collection
-
-
+from flask_socketio import join_room, leave_room
 @socketio.on('register')
 def register(data):
     """Register a socket to a user-specific room so the server can push notifications/messages
@@ -15,6 +14,27 @@ def register(data):
     room = str(user_id)
     join_room(room)
     print(f"[socket] ✅ user {user_id} joined personal room {room}")
+
+
+@socketio.on("join_project_workspace")
+def join_project_workspace(data):
+    project_id = data.get("project_id")
+    if not project_id:
+        print("[socket] ❌ join_project_workspace called without project_id")
+        return
+    room = f"project:{project_id}"
+    join_room(room)
+    print(f"[socket] ✅ joined project workspace room {room}")
+
+
+@socketio.on("leave_project_workspace")
+def leave_project_workspace(data):
+    project_id = data.get("project_id")
+    if not project_id:
+        return
+    room = f"project:{project_id}"
+    leave_room(room)
+    print(f"[socket] ✅ left project workspace room {room}")
 
 @socketio.on("load_conversation")
 def load_conversation(data):
@@ -130,3 +150,21 @@ def send_message(data):
     print(f"[socket] ✅✅✅ message saved {result.inserted_id} conv={conversation_id} from={user1_id} to={user2_id}")
     print(f"[socket] === SEND_MESSAGE COMPLETE ===\n")
 
+@socketio.on("join_user_notifications")
+def handle_join_user_notifications(data):
+    user_id = data.get("user_id")
+    if not user_id:
+        return
+    room = f"user:{user_id}"
+    join_room(room)
+    print(f"[socket] joined user notification room {room}")
+
+
+@socketio.on("leave_user_notifications")
+def handle_leave_user_notifications(data):
+    user_id = data.get("user_id")
+    if not user_id:
+        return
+    room = f"user:{user_id}"
+    leave_room(room)
+    print(f"[socket] left user notification room {room}")

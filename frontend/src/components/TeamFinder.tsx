@@ -80,7 +80,7 @@ const [loading,setLoading] = useState(true);
     
     try {
       const token = localStorage.getItem("csh_token");
-      const response = await fetch("https://projecthub-xnth.onrender.com/api/users/send-connection", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/send-connection`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -127,7 +127,7 @@ const [loading,setLoading] = useState(true);
       try {
         const token = localStorage.getItem("csh_token");
         console.log("TOKEN BEING SENT:", token);
-        const res = await fetch("https://projecthub-xnth.onrender.com/api/users/match", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/match`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

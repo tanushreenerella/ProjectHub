@@ -63,7 +63,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
 
         // Get 
         console.log('Fetching connections...');
-        const connectionsRes = await fetch('https://projecthub-xnth.onrender.com/api/users/connections', {
+        const connectionsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connections`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         
@@ -77,7 +77,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
 
         // Get pending connection requests (both sent and received)
         console.log('Fetching connection requests...');
-        const requestsRes = await fetch('https://projecthub-xnth.onrender.com/api/users/connection-requests', {
+        const requestsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         

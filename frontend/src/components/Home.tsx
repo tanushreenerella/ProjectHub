@@ -11,6 +11,7 @@ import { io, Socket } from "socket.io-client";
 import { useEffect } from "react";
 import Profile from './Profile';
 import Projects from './Projects.tsx';
+import Notifications from "./Notifications";
 interface HomeProps {
   user: User;
   onLogout: () => void;
@@ -50,7 +51,7 @@ const Home: React.FC<HomeProps> = ({ user, onLogout }) => {
   const token = localStorage.getItem("csh_token");
   if (!token) return;
 
-  const s = io("https://projecthub-xnth.onrender.com", {
+  const s = io(`${import.meta.env.VITE_API_URL}`, {
   query: { token }
 });
 
@@ -83,7 +84,7 @@ useEffect(() => {
       }
     })();
 
-    fetch("https://projecthub-xnth.onrender.com/api/projects/my", {
+    fetch(`${import.meta.env.VITE_API_URL}/api/projects/my`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -106,7 +107,7 @@ useEffect(() => {
   
           // Get 
           console.log('Fetching connections...');
-          const connectionsRes = await fetch('https://projecthub-xnth.onrender.com/api/users/connections', {
+          const connectionsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connections`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -120,7 +121,7 @@ useEffect(() => {
          setConnections(connectedUsers);
           // Get pending connection requests (both sent and received)
           console.log('Fetching connection requests...');
-          const requestsRes = await fetch('https://projecthub-xnth.onrender.com/api/users/connection-requests', {
+          const requestsRes = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
@@ -220,7 +221,7 @@ useEffect(() => {
     return;
   }
 
-  fetch("https://projecthub-xnth.onrender.com/api/conversations", {
+  fetch(`${import.meta.env.VITE_API_URL}/api/conversations`, {
     headers: {
       Authorization: `Bearer ${token}`
     }
@@ -246,7 +247,6 @@ useEffect(() => {
       user1_id: user.id,
       user2_id: toUserId
     });
-    
     const targetUser = allUsers.find(u => u.id === toUserId);
     console.log(`Connection request sent to ${targetUser?.name} with message: "${message}"`);
     
@@ -309,6 +309,27 @@ useEffect(() => {
     setShowChatWidget(false);
     setCurrentConversationId(null);
   };
+  const handleOpenNotification = (notification: {
+  type: string;
+  project_id?: string;
+}) => {
+  const type = notification.type || "";
+
+  if (type.startsWith("connection_")) {
+    setActiveTab("network");
+    return;
+  }
+
+  if (type.startsWith("project_") || type.startsWith("task_") || type === "member_joined_project") {
+    if (notification.project_id) {
+      localStorage.setItem("projecthub_open_project_id", notification.project_id);
+    }
+    setActiveTab("projects");
+    return;
+  }
+
+  setActiveTab("dashboard");
+};
 
   return (
     <div className="home-container">
@@ -366,15 +387,25 @@ useEffect(() => {
 
           </nav>
 
-          <div className="user-menu">
-            <div className="user-info">
-              <span className="user-name">Welcome, {user.name}</span>
-              <span className="user-role">{user.role}</span>
-            </div>
-            <button onClick={onLogout} className="logout-btn">
-              Logout
-            </button>
-          </div>
+         <div className="user-menu">
+  <Notifications
+  userId={user.id}
+  token={localStorage.getItem("csh_token") || ""}
+  socket={socket}
+  onOpenNotification={handleOpenNotification}
+/>
+
+
+  <div className="user-info">
+    <span className="user-name">Welcome, {user.name}</span>
+    <span className="user-role">{user.role}</span>
+  </div>
+
+  <button onClick={onLogout} className="logout-btn">
+    Logout
+  </button>
+</div>
+
         </div>
       </header>
 

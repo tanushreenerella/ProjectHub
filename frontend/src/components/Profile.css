@@ -120,3 +120,196 @@
   margin: 4px;
   display: inline-block;
 }
+
+/* ========================================
+   RESPONSIVE DESIGN
+   ======================================== */
+
+/* Large screens (1200px+) - Default styles above */
+
+/* Medium screens (768px - 1199px) */
+@media (max-width: 1199px) {
+  .profile-container {
+    padding: 25px;
+  }
+
+  .profile-header {
+    gap: 18px;
+    margin-bottom: 25px;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 28px;
+  }
+
+  .profile-info h1 {
+    font-size: 1.75rem;
+  }
+
+  .profile-info p {
+    font-size: 0.95rem;
+  }
+
+  .bio-text {
+    max-width: 600px;
+  }
+
+  .bio-edit {
+    max-width: 600px;
+  }
+
+  .profile-grid {
+    gap: 18px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+}
+
+/* Small screens (480px - 767px) */
+@media (max-width: 767px) {
+  .profile-container {
+    padding: 20px 15px;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+    font-size: 24px;
+  }
+
+  .profile-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .profile-info p {
+    font-size: 0.9rem;
+  }
+
+  .bio {
+    margin-top: 10px;
+  }
+
+  .bio-text {
+    max-width: none;
+    font-size: 0.95rem;
+  }
+
+  .bio-edit {
+    max-width: none;
+    gap: 6px;
+  }
+
+  .bio-textarea {
+    padding: 10px 12px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .edit-btn, .save-btn, .cancel-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .card h3 {
+    font-size: 1.125rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tags span {
+    margin: 0;
+    font-size: 0.85rem;
+    padding: 5px 8px;
+  }
+}
+
+/* Extra small screens (320px - 479px) */
+@media (max-width: 479px) {
+  .profile-container {
+    padding: 15px 10px;
+  }
+
+  .profile-header {
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+  }
+
+  .profile-info h1 {
+    font-size: 1.375rem;
+  }
+
+  .profile-info p {
+    font-size: 0.875rem;
+  }
+
+  .bio {
+    margin-top: 8px;
+  }
+
+  .bio-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .bio-edit {
+    gap: 5px;
+  }
+
+  .bio-textarea {
+    padding: 8px 10px;
+    min-height: 80px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+
+  .edit-btn, .save-btn, .cancel-btn {
+    padding: 7px 14px;
+    font-size: 0.875rem;
+  }
+
+  .profile-grid {
+    gap: 12px;
+  }
+
+  .card {
+    padding: 12px;
+    border-radius: 8px;
+  }
+
+  .card h3 {
+    font-size: 1rem;
+  }
+
+  .tags span {
+    font-size: 0.8rem;
+    padding: 4px 7px;
+  }
+}

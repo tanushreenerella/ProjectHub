@@ -28,10 +28,27 @@ export interface Project {
   title: string;
   description: string;
   category: string;
-  stage: 'ideation' | 'prototype' | 'launched';
   skillsNeeded: string[];
   creatorId: string;
   createdAt: Date;
+  team_members?: string[];
+  owner_id?: string;
+}
+
+export interface Task {
+  id: string;
+  project_id: string;
+  title: string;
+  status: 'todo' | 'in_progress' | 'done';
+  created_by: string;
+  created_at: Date;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  skills: string[];
+  bio: string;
 }
 
 export interface Mentor {
