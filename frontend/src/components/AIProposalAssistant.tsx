@@ -54,7 +54,7 @@ const AIProposalAssistant: React.FC = () => {
   const [aiResponse, setAiResponse] = useState<AIResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<"feedback" | "names">("feedback");
-  const [proposalDraft, setProposalDraft] = useState("");
+  const [, setProposalDraft] = useState("");
   const [proposalLoading, setProposalLoading] = useState(false);
   const [projectId, setProjectId] = useState("");
   const [copilotProjects, setCopilotProjects] = useState<CopilotProjectOption[]>([]);
@@ -205,18 +205,7 @@ const AIProposalAssistant: React.FC = () => {
 
   const recommendedNextStep = aiResponse?.improvements?.[0] || "Validate your startup idea with 5-10 target users before building further.";
 
-  const handleDownloadProposalDraft = () => {
-    if (!proposalDraft.trim()) return;
-    const blob = new Blob([proposalDraft], { type: "text/plain;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${(aiResponse?.businessNames?.[0] || "startup-proposal").toLowerCase().replace(/[^a-z0-9]+/g, "-")}.txt`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+
 
   return (
     <div className="ai-assistant-container">

@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client";
 import "./Projects.css";
 import AgentAnalysisPage from "./AgentAnalysisPage";
 import type { Project, Task, TeamMember } from "../types";
-import { AIService } from "../services/aiService";
+
 interface AnalysisData {
   evaluation: string;
   proposal: string;
@@ -15,14 +15,7 @@ type WorkspaceTab = "overview" | "tasks" | "calendar" | "analytics" | "team" | "
 type TaskType = "task" | "feature" | "improvement";
 type TaskPriority = "low" | "medium" | "high";
 type ProjectStatus = "active" | "planning" | "completed" | "on_hold";
-interface ProjectCopilotAnalysis {
-  summary: string;
-  healthScore: number;
-  risks: string[];
-  nextSteps: string[];
-  teamInsights: string[];
-  fundingReadiness: string;
-}
+
 interface WorkspaceTask extends Task {
   description: string;
   type: TaskType;
@@ -214,7 +207,7 @@ export default function Projects() {
   const [myInvites, setMyInvites] = useState<ProjectInvite[]>([]);
   const [activity, setActivity] = useState<ProjectActivityItem[]>([]);
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
-  const [analysisLoading, setAnalysisLoading] = useState(false);
+  
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [members, setMembers] = useState<TeamMember[]>([]);
   const [tasks, setTasks] = useState<WorkspaceTask[]>([]);
@@ -248,9 +241,7 @@ export default function Projects() {
     startDate: "",
     endDate: ""
   });
-  const [copilotAnalysis, setCopilotAnalysis] = useState<ProjectCopilotAnalysis | null>(null);
-const [copilotLoading, setCopilotLoading] = useState(false);
-const [showCopilotPanel, setShowCopilotPanel] = useState(false);
+
 const [chatMessages, setChatMessages] = useState<Array<{role: "user"|"ai"; text: string}>>([]);
 const [chatInput, setChatInput] = useState("");
 const [chatLoading, setChatLoading] = useState(false);
@@ -520,35 +511,6 @@ const WORKSPACE_CHAT_SUGGESTIONS = [
     });
   };
 
-  const runAgents = async (project: Project) => {
-    setAnalysisLoading(true);
-
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/agents/startup`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          description: project.description,
-          users: []
-        })
-      });
-
-      const data = await res.json();
-      setAnalysisData({
-        evaluation: data.evaluation || "",
-        proposal: data.proposal || "",
-        teamSuggestions: data.team_suggestions || "",
-        projectTitle: project.title
-      });
-    } catch (error) {
-      console.error(error);
-    }
-
-    setAnalysisLoading(false);
-  };
   const handleSendChatMessage = async (messageText?: string) => {
   const query = (messageText || chatInput).trim();
   if (!query || !selectedProject) return;
