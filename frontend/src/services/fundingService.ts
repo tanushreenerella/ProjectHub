@@ -2,6 +2,26 @@
 import type { FundingOpportunity, FundingApplication, Investor } from '../types/index.ts';
 const API_BASE = `${import.meta.env.VITE_API_URL}/api/funding`;
 
+export interface FundingReadinessInsight {
+  score: number;
+  summary: string;
+  strengths: string[];
+  missing: string[];
+  next_steps: string[];
+}
+
+export interface FundingMatchOpportunity extends FundingOpportunity {
+  matchScore: number;
+  matchReasons: string[];
+}
+
+export interface FundingInsightsResponse {
+  projectId: string;
+  projectTitle: string;
+  readiness: FundingReadinessInsight;
+  topMatches: FundingMatchOpportunity[];
+}
+
 function authHeader(): HeadersInit {
   const token = localStorage.getItem('csh_token');
   const headers: HeadersInit = {};
@@ -120,5 +140,38 @@ export class FundingService {
       throw new Error(err || 'Failed to seed data');
     }
     return res.json();
+  }
+
+  static async getFundingInsights(projectId: string): Promise<FundingInsightsResponse> {
+    const res = await fetch(`${API_BASE}/insights/${projectId}`, {
+      headers: {
+        ...authHeader()
+      }
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error || 'Failed to load funding insights');
+    }
+
+    const data = await res.json();
+
+    return {
+      projectId: data.project_id || data.projectId,
+      projectTitle: data.project_title || data.projectTitle || '',
+      readiness: {
+        score: data.readiness?.score ?? 0,
+        summary: data.readiness?.summary || '',
+        strengths: data.readiness?.strengths || [],
+        missing: data.readiness?.missing || [],
+        next_steps: data.readiness?.next_steps || data.readiness?.nextSteps || []
+      },
+      topMatches: (data.top_matches || data.topMatches || []).map((item: any) => ({
+        ...item,
+        deadline: item.deadline ? new Date(item.deadline) : null,
+        matchScore: item.match_score ?? item.matchScore ?? 0,
+        matchReasons: item.match_reasons || item.matchReasons || []
+      }))
+    };
   }
 }

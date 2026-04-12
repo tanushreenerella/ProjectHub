@@ -1,7 +1,7 @@
 from google import genai
 import os
 
-_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))  # keep Gemini for embeddings
 
 def generate_embedding(text: str):
     try:

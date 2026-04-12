@@ -7,7 +7,7 @@ from extensions import (
     knowledge_chunks_collection
 )
 from utils.embeddings import generate_embedding
-
+from rag.faiss_store import save_project_index
 
 def build_project_chunks(project_id: str):
     project = projects_collection.find_one({"_id": ObjectId(project_id)})
@@ -67,13 +67,30 @@ def upsert_project_knowledge(project_id: str):
     chunks = build_project_chunks(project_id)
 
     docs = []
+    embeddings = []
+    metadata = []
+
     for chunk in chunks:
+        embedding = generate_embedding(chunk["text"])
+
         docs.append({
             **chunk,
-            "embedding": generate_embedding(chunk["text"])
+            "embedding": embedding
+        })
+
+        embeddings.append(embedding)
+        metadata.append({
+            "source_type": chunk["source_type"],
+            "source_id": chunk["source_id"],
+            "text": chunk["text"]
         })
 
     if docs:
         knowledge_chunks_collection.insert_many(docs)
 
-    return {"chunks_indexed": len(docs)}
+    faiss_result = save_project_index(project_id, embeddings, metadata)
+
+    return {
+        "chunks_indexed": len(docs),
+        "faiss_indexed": faiss_result["indexed"]
+    }

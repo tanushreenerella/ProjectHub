@@ -251,7 +251,17 @@ export default function Projects() {
   const [copilotAnalysis, setCopilotAnalysis] = useState<ProjectCopilotAnalysis | null>(null);
 const [copilotLoading, setCopilotLoading] = useState(false);
 const [showCopilotPanel, setShowCopilotPanel] = useState(false);
-
+const [chatMessages, setChatMessages] = useState<Array<{role: "user"|"ai"; text: string}>>([]);
+const [chatInput, setChatInput] = useState("");
+const [chatLoading, setChatLoading] = useState(false);
+const [showChatPanel, setShowChatPanel] = useState(false);
+ 
+const WORKSPACE_CHAT_SUGGESTIONS = [
+  "What tasks are overdue?",
+  "What should the team focus on this week?",
+  "Who is currently assigned the most work?",
+  "Is this project ready for funding?"
+];
   const token = localStorage.getItem("csh_token");
 
   useEffect(() => {
@@ -539,39 +549,30 @@ const [showCopilotPanel, setShowCopilotPanel] = useState(false);
 
     setAnalysisLoading(false);
   };
-  const handleRunProjectCopilot = async () => {
-  if (!selectedProject) return;
-
-  setCopilotLoading(true);
-  setShowCopilotPanel(true);
-
+  const handleSendChatMessage = async (messageText?: string) => {
+  const query = (messageText || chatInput).trim();
+  if (!query || !selectedProject) return;
+ 
+  setChatMessages(prev => [...prev, { role: "user", text: query }]);
+  setChatInput("");
+  setChatLoading(true);
+ 
   try {
-    const result = await AIService.analyzeProjectCopilot(selectedProject.id);
-    setCopilotAnalysis(result);
-  } catch (error) {
-    console.error("Project copilot failed:", error);
-    setCopilotAnalysis({
-      summary: "AI copilot could not fully analyze the project right now.",
-      healthScore: 6,
-      risks: [
-        "Project context may be incomplete",
-        "Execution clarity may still be low",
-        "The current project may need stronger planning"
-      ],
-      nextSteps: [
-        "Review current tasks and priorities",
-        "Clarify the next milestone",
-        "Update project notes for better context"
-      ],
-      teamInsights: [
-        "Check whether work is clearly distributed",
-        "Make sure each open task has an owner"
-      ],
-      fundingReadiness: "Funding readiness cannot be assessed properly until project context is more complete."
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/ai/project-rag-copilot`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ project_id: selectedProject.id, query })
     });
+    const data = await res.json();
+    setChatMessages(prev => [...prev, { role: "ai", text: data.answer || "No response." }]);
+  } catch {
+    setChatMessages(prev => [...prev, { role: "ai", text: "Could not reach the AI copilot right now." }]);
+  } finally {
+    setChatLoading(false);
   }
-
-  setCopilotLoading(false);
 };
 
   const openWorkspace = async (project: Project) => {
@@ -1514,12 +1515,11 @@ const deleteProject = async (projectId: string) => {
 
   <div className="workspace-header-actions">
     <button
-      className="workspace-secondary-btn"
-      onClick={handleRunProjectCopilot}
-      disabled={copilotLoading}
-    >
-      {copilotLoading ? "Analyzing..." : "Ask AI Copilot"}
-    </button>
+  className="workspace-secondary-btn"
+  onClick={() => { setShowChatPanel(prev => !prev); setChatMessages([]); }}
+>
+  {showChatPanel ? "Close Copilot" : "Ask AI Copilot"}
+</button>
 
     <button className="workspace-primary-btn" onClick={() => setShowTaskModal(true)}>
       + New Task
@@ -1548,65 +1548,71 @@ const deleteProject = async (projectId: string) => {
           </div>
 
           {renderWorkspaceMain()}
-          {showCopilotPanel && copilotAnalysis && (
-  <div className="workspace-panel copilot-panel">
-    <div className="panel-header-row">
+          {showChatPanel && (
+  <div className="workspace-chat-panel">
+    <div className="workspace-chat-header">
       <div>
-        <h2>AI Project Copilot</h2>
-        <p>AI-generated execution and startup guidance for this workspace.</p>
+        <h3>AI Project Copilot</h3>
+        <p>Ask anything about {selectedProject.title} — tasks, team, blockers, and next steps.</p>
       </div>
-      <button className="workspace-secondary-btn" onClick={() => setShowCopilotPanel(false)}>
-        Close
+      <button className="workspace-secondary-btn" onClick={() => setShowChatPanel(false)}>
+        ✕
       </button>
     </div>
-
-    <div className="copilot-score-card">
-      <span>Project Health Score</span>
-      <strong>{copilotAnalysis.healthScore}/10</strong>
-    </div>
-
-    <div className="copilot-section">
-      <h3>Summary</h3>
-      <p>{copilotAnalysis.summary}</p>
-    </div>
-
-    <div className="copilot-grid">
-      <div className="workspace-panel">
-        <h3>Risks</h3>
-        <ul>
-          {copilotAnalysis.risks.map((risk, index) => (
-            <li key={index}>{risk}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="workspace-panel">
-        <h3>Next Steps</h3>
-        <ul>
-          {copilotAnalysis.nextSteps.map((step, index) => (
-            <li key={index}>{step}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="workspace-panel">
-        <h3>Team Insights</h3>
-        <ul>
-          {copilotAnalysis.teamInsights.map((insight, index) => (
-            <li key={index}>{insight}</li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="workspace-panel">
-        <h3>Funding Readiness</h3>
-        <p>{copilotAnalysis.fundingReadiness}</p>
-      </div>
-    </div>
-  </div>
-)}
-
+ 
+    <div className="workspace-chat-messages">
+      {chatMessages.length === 0 && (
+        <div className="workspace-chat-empty">
+          <p>Ask me anything about this project.</p>
+          <span>I have full context of your tasks, team, and recent activity.</span>
         </div>
+      )}
+      {chatMessages.map((msg, i) => (
+        <div key={i} className={`chat-msg ${msg.role}`}>
+          <span className="chat-msg-label">{msg.role === "user" ? "You" : "Copilot"}</span>
+          <div className="chat-msg-bubble">{msg.text}</div>
+        </div>
+      ))}
+      {chatLoading && (
+        <div className="chat-msg ai loading">
+          <span className="chat-msg-label">Copilot</span>
+          <div className="chat-msg-bubble">Thinking...</div>
+        </div>
+      )}
+    </div>
+ 
+    {chatMessages.length === 0 && (
+      <div className="workspace-chat-suggestions">
+        {WORKSPACE_CHAT_SUGGESTIONS.map((q) => (
+          <button key={q} className="workspace-chat-chip"
+            onClick={() => handleSendChatMessage(q)}>
+            {q}
+          </button>
+        ))}
+      </div>
+    )}
+ 
+    <div className="workspace-chat-input-row">
+      <textarea
+        className="workspace-chat-input"
+        value={chatInput}
+        onChange={(e) => setChatInput(e.target.value)}
+        placeholder="Ask about tasks, blockers, team, or next steps..."
+        rows={1}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            handleSendChatMessage();
+          }
+        }}
+      />
+      <button className="workspace-chat-send"
+        onClick={() => handleSendChatMessage()}
+        disabled={chatLoading || !chatInput.trim()}>
+        Send
+      </button>
+    </div>
+  </div>)}
 
         {showInviteModal && (
           <div className="workspace-modal-overlay" onClick={() => setShowInviteModal(false)}>
@@ -1745,8 +1751,9 @@ const deleteProject = async (projectId: string) => {
           </div>
         )}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="projects-page">
@@ -1935,9 +1942,6 @@ const deleteProject = async (projectId: string) => {
             <div className="btns">
               <button className="workspace-primary-btn" onClick={() => openWorkspace(project)}>
                 Open Workspace
-              </button>
-              <button className="workspace-secondary-btn" onClick={() => runAgents(project)} disabled={analysisLoading}>
-                Run AI Startup Agents
               </button>
               <button className="workspace-secondary-btn" onClick={() => archiveProject(project.id)}>
     Archive

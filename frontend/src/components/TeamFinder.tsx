@@ -180,7 +180,7 @@ const [loading,setLoading] = useState(true);
           </div>
 
           <div className="filter-section">
-            <h3>🔧 Filter by Skills</h3>
+            <h3>Filter by Skills</h3>
             <p className="filter-hint">Select one or more skills</p>
             <div className="filter-tags">
               {availableSkills.map(skill => (
@@ -205,7 +205,7 @@ const [loading,setLoading] = useState(true);
           </div>
 
           <div className="filter-section">
-            <h3>💡 Filter by Interests</h3>
+            <h3>Filter by Interests</h3>
             <p className="filter-hint">Select one or more interests</p>
             <div className="filter-tags">
               {availableInterests.map(interest => (
@@ -230,7 +230,7 @@ const [loading,setLoading] = useState(true);
           </div>
 
           <div className="filter-section">
-            <h3>👔 Filter by Role</h3>
+            <h3>Filter by Role</h3>
             <select 
               value={filters.role}
               onChange={(e) => setFilters(prev => ({ ...prev, role: e.target.value }))}
@@ -287,7 +287,7 @@ const [loading,setLoading] = useState(true);
                 )}
 
                 <div className="user-skills">
-                  <h4>🔧 Skills ({user.skills.length})</h4>
+                  <h4> Skills ({user.skills.length})</h4>
                   <div className="skill-tags">
                     {user.skills.slice(0, 4).map(skill => (
                       <span key={skill} className="skill-tag">{skill}</span>
@@ -299,7 +299,7 @@ const [loading,setLoading] = useState(true);
                 </div>
 
                 <div className="user-interests">
-                  <h4>💡 Interests ({user.interests.length})</h4>
+                  <h4>Interests ({user.interests.length})</h4>
                   <div className="interest-tags">
                     {user.interests.slice(0, 3).map(interest => (
                       <span key={interest} className="interest-tag">{interest}</span>
@@ -323,7 +323,7 @@ const [loading,setLoading] = useState(true);
                   onClick={() => setSelectedUser(user)}
                   title={`Send connection request to ${user.name}`}
                 >
-                  🤝 Connect with {user.name.split(' ')[0]}
+                  Connect with {user.name.split(' ')[0]}
                 </button>
               </div>
             ))

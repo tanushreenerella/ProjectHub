@@ -1,0 +1,17 @@
+[
+  {
+    "source_type": "project",
+    "source_id": "698e18b7b5975128baa3209b",
+    "text": "Project title: StudySync. Description: To prepare for interviews and give mocks. Notes: "
+  },
+  {
+    "source_type": "activity",
+    "source_id": "69d1e4b17c3fd10d68138ccd",
+    "text": "Activity: Tanushree Venkata Nerella joined the project. Actor: Tanushree Venkata Nerella. Event type: member_joined"
+  },
+  {
+    "source_type": "member",
+    "source_id": "6994ce566f27b290fb472de3",
+    "text": "Member: Tanushree Venkata Nerella. Role: student. Skills: react, marketing. Interests: ui ux"
+  }
+]

@@ -29,6 +29,36 @@
   margin: 0;
 }
 
+.funding-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.stat-card {
+  background: #162133;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 1rem 1.1rem;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-label {
+  color: #9fb0cc;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.stat-value {
+  color: #f8fbff;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
 /* Navigation Tabs */
 .funding-tabs {
   display: flex;
@@ -36,6 +66,8 @@
   margin-bottom: 2rem;
   border-bottom: 1px solid #334155;
   padding-bottom: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .tab {
@@ -60,6 +92,217 @@
   color: #3b82f6;
   border-bottom-color: #3b82f6;
   background: rgba(59, 130, 246, 0.1);
+}
+
+.seed-btn {
+  margin-left: auto;
+  padding: 0.8rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid #475569;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seed-btn:hover {
+  border-color: #3b82f6;
+  color: #3b82f6;
+}
+
+.funding-insights-panel {
+  margin-bottom: 1.5rem;
+  padding: 1.4rem;
+  background: linear-gradient(180deg, rgba(14, 22, 38, 0.98), rgba(10, 17, 31, 0.96));
+  border: 1px solid #334155;
+  border-radius: 18px;
+}
+
+.funding-insights-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.funding-insights-header h2 {
+  margin: 0 0 0.35rem;
+  color: #f1f5f9;
+  font-size: 1.35rem;
+}
+
+.funding-insights-header p {
+  margin: 0;
+  color: #94a3b8;
+}
+
+.insights-select {
+  min-width: 240px;
+}
+
+.selected-project-pill {
+  margin-bottom: 1rem;
+  padding: 0.8rem 1rem;
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: #cbd5e1;
+}
+
+.funding-insights-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+.readiness-card,
+.insights-list-card,
+.top-match-card,
+.empty-state-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 1.1rem;
+}
+
+.readiness-card {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.readiness-score-ring {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  border: 6px solid rgba(59, 130, 246, 0.32);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.readiness-score-ring span {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.readiness-score-ring small {
+  color: #94a3b8;
+  font-size: 0.8rem;
+}
+
+.readiness-copy h3 {
+  margin: 0 0 0.4rem;
+  color: #f1f5f9;
+}
+
+.readiness-copy p {
+  margin: 0;
+  color: #cbd5e1;
+  line-height: 1.55;
+}
+
+.insights-list-card h4,
+.top-matches-strip h3 {
+  margin: 0 0 0.8rem;
+  color: #f8fafc;
+}
+
+.insights-list-card ul,
+.top-match-card ul,
+.match-reasons {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.insights-list-card li,
+.top-match-card li,
+.match-reasons li {
+  color: #cbd5e1;
+  margin-bottom: 0.45rem;
+  line-height: 1.45;
+}
+
+.top-matches-strip {
+  margin-top: 1rem;
+}
+
+.top-matches-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.top-match-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.top-match-header h4 {
+  margin: 0;
+  color: #f1f5f9;
+}
+
+.top-match-card p {
+  margin: 0 0 0.8rem;
+  color: #94a3b8;
+}
+
+.match-score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #4ade80;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.match-highlight {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #22314b;
+}
+
+.compact-loading {
+  padding: 1.5rem 0;
+}
+
+.insights-empty-state,
+.empty-state-card {
+  text-align: center;
+}
+
+.insights-empty-state p,
+.empty-state-card p {
+  color: #94a3b8;
+  margin: 0.5rem 0 0;
+}
+
+.empty-state-card h3 {
+  margin: 0;
+  color: #f1f5f9;
+}
+
+.applications-actions {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* Filters Bar */
@@ -743,6 +986,24 @@
     flex-direction: column;
   }
 
+  .funding-stats,
+  .funding-insights-grid,
+  .top-matches-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card,
+  .funding-insights-header,
+  .readiness-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .seed-btn {
+    margin-left: 0;
+    width: 100%;
+  }
+
   .tab {
     text-align: left;
     border-bottom: 1px solid #334155;
@@ -1175,5 +1436,55 @@
 
   .modal-content {
     padding: 0.875rem;
+  }
+}
+
+/* Funding stat override to avoid collision with Home.css stat-card styles */
+.funding-portal .funding-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin: 1.25rem 0 1.5rem;
+}
+
+.funding-portal .funding-stats .stat-card {
+  background: #162133;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  min-height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  transform: none;
+  box-shadow: none;
+}
+
+.funding-portal .funding-stats .stat-card:hover {
+  transform: none;
+  border-color: #41577a;
+}
+
+.funding-portal .funding-stats .stat-label {
+  color: #9fb0cc;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.funding-portal .funding-stats .stat-value {
+  color: #f8fbff;
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+@media (max-width: 768px) {
+  .funding-portal .funding-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .funding-portal .funding-stats .stat-card {
+    min-height: auto;
   }
 }

@@ -2,9 +2,8 @@ from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 import pymongo
 from config import MONGO_URI
-from google import genai
 import os
-
+from groq import Groq
 jwt = JWTManager()
 socketio = SocketIO(cors_allowed_origins="*", async_mode="threading")
 
@@ -21,6 +20,5 @@ project_invites_collection = db.get_collection("project_invites")
 project_activity_collection = db.get_collection("project_activity")
 notifications_collection = db["notifications"]
 knowledge_chunks_collection = db.get_collection("knowledge_chunks")
-
-gemini_client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-print("API KEY:", os.getenv("GEMINI_API_KEY"))
+gemini_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+print("API KEY:", os.getenv("GROQ_API_KEY"))

@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from bson.objectid import ObjectId
 from extensions import (
-    gemini_client,  # Changed from openai_client
+    gemini_client,
     users_collection,
     project_activity_collection,
     projects_collection,
@@ -177,11 +177,11 @@ Return ONLY valid JSON (no markdown, no code blocks):
 }}"""
 
     try:
-        response = gemini_client.models.generate_content(
-        model="gemini-2.0-flash",
-    contents=prompt
-    )
-        content = response.text.strip()
+        response = gemini_client.chat.completions.create(
+      model="llama-3.1-8b-instant",  # fast & free
+      messages=[{"role": "user", "content": prompt}]
+      )
+        content = response.choices[0].message.content.strip()
         
         if "```json" in content:
             content = content.split("```json")[1].split("```")[0].strip()
@@ -241,11 +241,11 @@ Return JSON in exactly this structure:
 """
 
     try:
-        response = gemini_client.models.generate_content(
-        model="gemini-2.0-flash",
-    contents=prompt
-    )
-        content = response.text.strip()
+        response = gemini_client.chat.completions.create(
+      model="llama-3.1-8b-instant",  # fast & free
+      messages=[{"role": "user", "content": prompt}]
+      )
+        content = response.choices[0].message.content.strip()
         if "```json" in content:
             content = content.split("```json")[1].split("```")[0].strip()
         elif "```" in content:
@@ -318,12 +318,12 @@ Return a helpful, specific answer grounded in this project data.
 """
 
     try:
-        response = gemini_client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
-        )
-        answer = response.text.strip()
-        return jsonify({"answer": answer, "retrieved_context": retrieved})
+      response = gemini_client.chat.completions.create(
+      model="llama-3.1-8b-instant",  # fast & free
+      messages=[{"role": "user", "content": prompt}]
+      )
+      content = response.choices[0].message.content.strip()
+      return jsonify({"answer": content, "retrieved_context": retrieved})
     except Exception as e:
         print(f"[RAG] generate_content failed: {e}")
         import traceback; traceback.print_exc()

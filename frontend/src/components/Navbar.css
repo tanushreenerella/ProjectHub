@@ -12,25 +12,28 @@
 }
 
 .nav-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 1.5rem;
+  height: 56px;
 }
 
 /* Logo */
 .nav-logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: #3b82f6;
+  flex-shrink: 0;
 }
 
 .logo-icon {
-  font-size: 1.75rem;
+  font-size: 1.4rem;
 }
 
 .logo-text {
@@ -43,21 +46,21 @@
 /* Desktop Navigation */
 .nav-links {
   display: flex;
-  gap: 2rem;
+  gap: 0.25rem;
   align-items: center;
 }
 
 .nav-link {
   background: none;
   border: none;
-  color: #e2e8f0;
-  font-size: 1rem;
+  color: #cbd5e1;
+  font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: 0.4rem 0.75rem;
   border-radius: 6px;
   transition: all 0.2s ease;
-  position: relative;
+  white-space: nowrap;
 }
 
 .nav-link:hover {
@@ -65,37 +68,28 @@
   background: rgba(59, 130, 246, 0.1);
 }
 
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  width: 0;
-  height: 2px;
-  background: #3b82f6;
-  transition: all 0.2s ease;
-  transform: translateX(-50%);
-}
-
-.nav-link:hover::after {
-  width: 80%;
+.nav-link.active {
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
 }
 
 /* Auth Buttons */
 .nav-auth {
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .auth-btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.4rem 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 .login-btn {
@@ -159,8 +153,8 @@
   background: none;
   border: none;
   color: #e2e8f0;
-  font-size: 1.1rem;
-  padding: 1rem;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
   text-align: left;
   cursor: pointer;
   border-radius: 6px;
@@ -182,7 +176,7 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .nav-links,
   .nav-auth {
     display: none;
@@ -195,18 +189,10 @@
   .mobile-menu {
     display: flex;
   }
-
-  .nav-container {
-    padding: 1rem;
-  }
 }
 
 @media (max-width: 480px) {
-  .nav-logo .logo-text {
-    font-size: 1.25rem;
-  }
-  
-  .logo-icon {
-    font-size: 1.5rem;
+  .nav-container {
+    padding: 0 1rem;
   }
 }

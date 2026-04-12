@@ -8,3 +8,5 @@ python-dotenv
 APScheduler
 google-genai
 bcrypt
+faiss-cpu
+numpy

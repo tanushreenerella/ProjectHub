@@ -1,6 +1,6 @@
 /* src/components/Home.css */
 .home-container {
-  min-height: 100vh;
+  min-height: 120vh;
   background: #0f172a;
   color: #f8fafc;
 }
@@ -12,28 +12,33 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  padding-top:1rem;
+  padding:0.5rem 0rem;
 }
 
 .header-content {
-  max-width: 1200px;
+  max-width: 1400px;
+  margin: o auto;
   display: flex;
-  max-height:100px;
+  align-items: center;
+  
   justify-content: space-between;
-  padding:0 1rem;
+  padding: 0 1.5rem;
+  height: 56px;
+  gap: 1rem;
 }
 
 .logo {
   display: flex;
-
-  gap: 0.5rem;
-  font-weight: 700;
-  font-size: 1.5rem;
+  align-items: center;
+  gap: 0.4rem;
+   font-weight: 700;
+  font-size: 1.2rem;
   color: #3b82f6;
+  flex-shrink: 0;
 }
 
 .logo-icon {
-  font-size: 1.75rem;
+  font-size: 1.4rem;
 }
 
 .logo-text {
@@ -45,21 +50,25 @@
 
 /* Navigation */
 .main-nav {
+  margin-right:2rem;
   display: flex;
-  gap: 2rem;
+  gap: 0.1rem;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-item {
   background: none;
   border: none;
   color: #94a3b8;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  padding: 0.5rem 1rem;
+  padding: 0.35rem 0.6rem;
   border-radius: 6px;
   transition: all 0.2s ease;
-  position: relative;
+  white-space: nowrap;
 }
 
 .nav-item:hover {
@@ -71,6 +80,7 @@
   color: #3b82f6;
   background: rgba(59, 130, 246, 0.1);
 }
+
 
 .nav-item.active::after {
   content: '';
@@ -86,7 +96,8 @@
 .user-menu {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .user-info {
@@ -98,24 +109,30 @@
 .user-name {
   font-weight: 600;
   color: #f1f5f9;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 .user-role {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: #94a3b8;
   text-transform: capitalize;
 }
+
 
 .logout-btn {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid #ef4444;
   color: #ef4444;
- 
+  padding: 0.35rem 0.75rem;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
+
 
 .logout-btn:hover {
   background: #ef4444;
@@ -405,19 +422,15 @@
 
 /* Tab Headers */
 .tab-header {
-  display: flex;
-  justify-content: space-between;
+  
+  text-align: center;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom:0.5rem;
+  margin-top:1rem;
 }
-
-.tab-header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f1f5f9;
-  margin: 0;
+.tab-header p{
+  text-align:center;
 }
-
 .create-project-btn {
   background: #3b82f6;
   color: white;

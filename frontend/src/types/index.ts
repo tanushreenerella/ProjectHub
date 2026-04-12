@@ -28,6 +28,7 @@ export interface Project {
   title: string;
   description: string;
   category: string;
+  stage?: string;
   skillsNeeded: string[];
   creatorId: string;
   createdAt: Date;

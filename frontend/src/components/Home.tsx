@@ -4,7 +4,7 @@ import type { User, Project, UserProfile, FundingApplication, Conversation, Mess
 import './Home.css';
 import AIProposalAssistant from './AIProposalAssistant';
 import TeamFinder from './TeamFinder';
-import FundingPortal from './fundingPortal';
+import FundingPortal from './FundingPortal';
 import { FundingService } from '../services/fundingService';
 import Chat from './Chat';
 import { io, Socket } from "socket.io-client";
@@ -500,7 +500,6 @@ useEffect(() => {
         {activeTab === 'ai' && (
           <div className="ai-tab">
             <div className="tab-header">
-              <h1>AI Proposal Assistant</h1>
               <p>Get instant feedback and improvements for your startup ideas</p>
             </div>
             <AIProposalAssistant />

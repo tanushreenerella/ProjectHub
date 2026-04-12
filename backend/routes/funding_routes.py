@@ -2,13 +2,140 @@ from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
 from bson.objectid import ObjectId
-from extensions import db
+from extensions import db, projects_collection
 
 funding_bp = Blueprint('funding', __name__)
 
 funding_collection = db.get_collection('funding_opportunities')
 applications_collection = db.get_collection('funding_applications')
 investors_collection = db.get_collection('investors')
+
+
+def _safe_text(value):
+    if value is None:
+        return ''
+    if isinstance(value, list):
+        return ' '.join(str(item) for item in value)
+    return str(value)
+
+
+def _keyword_overlap(project_text: str, opportunity_doc: dict) -> int:
+    project_terms = {
+        token.strip('.,').lower()
+        for token in project_text.split()
+        if len(token.strip('.,')) > 3
+    }
+    opportunity_terms = {
+        token.strip('.,').lower()
+        for token in (
+            f"{_safe_text(opportunity_doc.get('title'))} "
+            f"{_safe_text(opportunity_doc.get('description'))} "
+            f"{_safe_text(opportunity_doc.get('provider'))} "
+            f"{_safe_text(opportunity_doc.get('tags'))}"
+        ).split()
+        if len(token.strip('.,')) > 3
+    }
+    return len(project_terms & opportunity_terms)
+
+
+def _compute_match_score(project: dict, opportunity: dict) -> tuple[int, list[str]]:
+    score = 35
+    reasons = []
+
+    project_stage = (project.get('stage') or '').lower()
+    opportunity_stage = (opportunity.get('stage') or '').lower()
+    project_category = (project.get('category') or '').lower()
+    project_title = _safe_text(project.get('title'))
+    project_description = _safe_text(project.get('description'))
+    project_skills = ' '.join(project.get('skills_required', []) or project.get('skillsNeeded', []) or [])
+    project_text = f"{project_title} {project_description} {project_category} {project_skills}".lower()
+
+    if project_stage and opportunity_stage and project_stage == opportunity_stage:
+        score += 25
+        reasons.append(f"Aligned with your {project_stage} stage")
+
+    tags = [str(tag).lower() for tag in opportunity.get('tags', [])]
+    if project_category and any(project_category in tag or tag in project_category for tag in tags):
+        score += 20
+        reasons.append("Category aligns with this opportunity")
+
+    overlap = _keyword_overlap(project_text, opportunity)
+    if overlap:
+        score += min(20, overlap * 5)
+        reasons.append("Strong keyword overlap with your project focus")
+
+    if 'student' in project_text:
+        eligibility_text = ' '.join(opportunity.get('eligibility', [])).lower()
+        if 'student' in eligibility_text:
+            score += 10
+            reasons.append("Student founder eligibility matches")
+
+    return min(100, score), reasons[:3]
+
+
+def _build_funding_readiness(project: dict) -> dict:
+    score = 4
+    strengths = []
+    missing = []
+    next_steps = []
+
+    if _safe_text(project.get('description')).strip():
+        score += 2
+        strengths.append("Project has a defined problem and solution summary")
+    else:
+        missing.append("Add a clearer project description")
+
+    if _safe_text(project.get('category')).strip():
+        score += 1
+        strengths.append("Project positioning is categorized")
+    else:
+        missing.append("Clarify the project category and target space")
+
+    stage = _safe_text(project.get('stage')).strip().lower()
+    if stage in {'prototype', 'launched'}:
+        score += 2
+        strengths.append("Project is beyond raw ideation stage")
+    else:
+        missing.append("Move from ideation toward a working prototype")
+
+    notes = _safe_text(project.get('notes')).strip()
+    if notes:
+        score += 1
+        strengths.append("Project notes show planning discipline")
+    else:
+        missing.append("Document traction, roadmap, or milestones in project notes")
+
+    skills = project.get('skills_required', []) or project.get('skillsNeeded', []) or []
+    if skills:
+        score += 1
+        strengths.append("Team or skills requirements are identified")
+    else:
+        missing.append("Define the key skills required to execute this project")
+
+    next_steps.extend([
+        "Prepare a short traction narrative with milestones achieved",
+        "Refine your funding ask and explain exactly how funds will be used",
+        "Match your project stage to the most relevant funding opportunities"
+    ])
+
+    if stage == 'launched':
+        next_steps[0] = "Highlight usage, traction, or validation metrics in your application"
+    elif stage == 'prototype':
+        next_steps[0] = "Show prototype evidence and user feedback before applying broadly"
+
+    summary = (
+        "This project shows a promising foundation for funding applications."
+        if score >= 7
+        else "This project has potential, but it needs stronger evidence and clearer execution signals before applying confidently."
+    )
+
+    return {
+        'score': min(10, score),
+        'summary': summary,
+        'strengths': strengths[:3],
+        'missing': missing[:3],
+        'next_steps': next_steps[:3]
+    }
 
 
 def _serialize_doc(doc: dict) -> dict:
@@ -124,6 +251,49 @@ def list_investors():
         item['id'] = str(item.pop('_id'))
         results.append(item)
     return jsonify(results)
+
+
+@funding_bp.route('/insights/<project_id>', methods=['GET', 'OPTIONS'])
+@jwt_required()
+def funding_insights(project_id):
+    if request.method == 'OPTIONS':
+        return jsonify({}), 200
+
+    identity = get_jwt_identity()
+
+    try:
+        project = projects_collection.find_one({'_id': ObjectId(project_id)})
+    except Exception:
+        return jsonify({'error': 'Invalid project id'}), 400
+
+    if not project:
+        return jsonify({'error': 'Project not found'}), 404
+
+    owner_id = str(project.get('owner_id') or '')
+    team_members = [str(member_id) for member_id in project.get('team_members', [])]
+    if str(identity) != owner_id and str(identity) not in team_members:
+        return jsonify({'error': 'Unauthorized'}), 403
+
+    readiness = _build_funding_readiness(project)
+
+    opportunities = list(funding_collection.find({}).sort('deadline', 1))
+    matches = []
+    for opportunity in opportunities:
+        score, reasons = _compute_match_score(project, opportunity)
+        matches.append({
+            **_serialize_doc(opportunity),
+            'match_score': score,
+            'match_reasons': reasons
+        })
+
+    matches.sort(key=lambda item: item['match_score'], reverse=True)
+
+    return jsonify({
+        'project_id': str(project['_id']),
+        'project_title': project.get('title', ''),
+        'readiness': readiness,
+        'top_matches': matches[:3]
+    })
 
 
 def seed_funding_data():

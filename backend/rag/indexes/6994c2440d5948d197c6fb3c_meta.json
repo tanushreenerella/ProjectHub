@@ -1,0 +1,62 @@
+[
+  {
+    "source_type": "project",
+    "source_id": "6994c2440d5948d197c6fb3c",
+    "text": "Project title: CampusHub. Description: Our AI mentor is currently busy. Please try again in a moment.. Notes: "
+  },
+  {
+    "source_type": "task",
+    "source_id": "69b25249c763a35d0125a507",
+    "text": "Task: frontend fixes. Description: . Status: done. Priority: . Assignee: "
+  },
+  {
+    "source_type": "task",
+    "source_id": "69ca573c39909af05157d81c",
+    "text": "Task: backend fix. Description: route updates. Status: todo. Priority: medium. Assignee: Tanushree Venkata Nerella"
+  },
+  {
+    "source_type": "activity",
+    "source_id": "69d2b3f6c529907d87b27bfc",
+    "text": "Activity: Mahak kabra joined the project. Actor: Mahak kabra. Event type: invite_accepted"
+  },
+  {
+    "source_type": "activity",
+    "source_id": "69d2b3bfc529907d87b27bf9",
+    "text": "Activity: Invited m@gmail.com as member. Actor: Tanushree Venkata Nerella. Event type: invite_sent"
+  },
+  {
+    "source_type": "activity",
+    "source_id": "69d2acb9c529907d87b27bf5",
+    "text": "Activity: Invited mahakkabra@gmai.com as member. Actor: Tanushree Venkata Nerella. Event type: invite_sent"
+  },
+  {
+    "source_type": "activity",
+    "source_id": "69d10dac02e7da45efa17023",
+    "text": "Activity: Invited shambhavisingh@gmail.com as member. Actor: Tanushree Venkata Nerella. Event type: invite_sent"
+  },
+  {
+    "source_type": "activity",
+    "source_id": "69ca575039909af05157d81f",
+    "text": "Activity: Changed task backend fix to todo. Actor: Tanushree Venkata Nerella. Event type: task_status_changed"
+  },
+  {
+    "source_type": "activity",
+    "source_id": "69ca574939909af05157d81e",
+    "text": "Activity: Changed task backend fix to done. Actor: Tanushree Venkata Nerella. Event type: task_status_changed"
+  },
+  {
+    "source_type": "activity",
+    "source_id": "69ca573c39909af05157d81d",
+    "text": "Activity: Created task backend fix. Actor: Tanushree Venkata Nerella. Event type: task_created"
+  },
+  {
+    "source_type": "member",
+    "source_id": "6994ce566f27b290fb472de3",
+    "text": "Member: Tanushree Venkata Nerella. Role: student. Skills: react, marketing. Interests: ui ux"
+  },
+  {
+    "source_type": "member",
+    "source_id": "69d2b394c529907d87b27bf7",
+    "text": "Member: Mahak kabra. Role: student. Skills: react. Interests: ai"
+  }
+]
