@@ -10,3 +10,4 @@ google-genai
 bcrypt
 faiss-cpu
 numpy
+groq
