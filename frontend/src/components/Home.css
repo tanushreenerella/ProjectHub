@@ -1,30 +1,30 @@
 /* src/components/Home.css */
 .home-container {
-  min-height: 120vh;
-  background: #0f172a;
-  color: #f8fafc;
+  min-height: auto;
+  background: #0b1223;
+  color: #eef2ff;
 }
 
 /* Header */
 .home-header {
-  background: #1e293b;
-  border-bottom: 1px solid #334155;
+  background: #111c33;
+  border-bottom: 1px solid #24314b;
   position: sticky;
   top: 0;
   z-index: 100;
-  padding:0.5rem 0rem;
+  padding: 0.35rem 1rem;
 }
 
 .header-content {
-  max-width: 1400px;
-  margin: o auto;
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   align-items: center;
-  
   justify-content: space-between;
-  padding: 0 1.5rem;
-  height: 56px;
-  gap: 1rem;
+  padding: 0 1.2rem;
+  height: 52px;
+  gap: 0.75rem;
+  margin:0.5rem 0rem;
 }
 
 .logo {
@@ -148,91 +148,100 @@
 
 /* Dashboard */
 .dashboard-header {
-  margin-bottom: 2rem;
+  margin-bottom: 1.35rem;
 }
 
 .dashboard-header h1 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #f1f5f9;
-  margin-bottom: 0.5rem;
+  color: #f8fafc;
+  margin-bottom: 0.35rem;
 }
 
 .dashboard-header p {
-  color: #94a3b8;
-  font-size: 1.125rem;
+  color: #a1aebf;
+  font-size: 0.98rem;
+  margin: 0;
+  max-width: 720px;
+  line-height: 1.5;
 }
 
 /* Stats Cards */
 .stats-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
 }
 
 .stat-card {
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 1.5rem;
+  background: #111c33;
+  border: 1px solid #24314b;
+  border-radius: 16px;
+  padding: 1rem;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  transition: all 0.3s ease;
+  gap: 0.9rem;
+  transition: all 0.2s ease;
 }
 
 .stat-card:hover {
-  border-color: #3b82f6;
-  transform: translateY(-2px);
+  border-color: #60a5fa;
+  transform: translateY(-1px);
 }
 
 .stat-icon {
-  font-size: 2.5rem;
+  font-size: 1.7rem;
+  min-width: 44px;
+  min-height: 44px;
+  display: grid;
+  place-items: center;
 }
 
 .stat-info h3 {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: #3b82f6;
+  color: #60a5fa;
   margin: 0;
 }
 
 .stat-info p {
-  color: #94a3b8;
-  margin: 0;
+  color: #a1aebf;
+  margin: 0.15rem 0 0;
+  font-size: 0.9rem;
 }
 
 /* Quick Actions */
 .quick-actions {
-  margin-bottom: 3rem;
+  margin-bottom: 1.8rem;
 }
 
 .quick-actions h2 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
-  color: #f1f5f9;
-  margin-bottom: 1rem;
+  color: #eef2ff;
+  margin-bottom: 0.9rem;
 }
 
 .action-buttons {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
 }
 
 .action-btn {
-  padding: 1.5rem 1rem;
+  padding: 1rem 0.9rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 1rem;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  min-height: 52px;
 }
 
 .action-btn.primary {
@@ -270,34 +279,34 @@
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
 }
 
 .project-card {
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 1.5rem;
-  transition: all 0.3s ease;
+  background: #111c33;
+  border: 1px solid #24314b;
+  border-radius: 16px;
+  padding: 1rem;
+  transition: all 0.2s ease;
 }
 
 .project-card:hover {
-  border-color: #3b82f6;
-  transform: translateY(-2px);
+  border-color: #60a5fa;
+  transform: translateY(-1px);
 }
 
 .project-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #f1f5f9;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #eef2ff;
   margin-bottom: 0.5rem;
 }
 
 .project-card p {
-  color: #94a3b8;
-  margin-bottom: 1rem;
-  line-height: 1.5;
+  color: #a1aebf;
+  margin-bottom: 0.8rem;
+  line-height: 1.4;
 }
 
 .project-meta {

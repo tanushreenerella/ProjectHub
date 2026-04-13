@@ -23,6 +23,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [newSkill, setNewSkill] = useState('');
   const [newInterest, setNewInterest] = useState('');
+  const [formError, setFormError] = useState('');
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -78,17 +79,21 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
   };
 
   const handleSubmit = (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (formData.lookingFor.length === 0) {
-    alert("Select at least one role you're looking for");
-    return;
-  }
+    if (formData.lookingFor.length === 0) {
+      setFormError("Select at least one role you're looking for to continue.");
+      return;
+    }
 
-  onRegister({ ...formData, createdAt: new Date() });
-};
+    setFormError('');
+    onRegister({ ...formData, createdAt: new Date() });
+  };
 
-  const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
+  const nextStep = () => {
+    setFormError('');
+    setCurrentStep(prev => Math.min(prev + 1, 3));
+  };
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
   // Handle Enter key for adding skills and interests
@@ -104,19 +109,41 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
   };
 
   return (
-    <div className="register-container">
-      <div className="register-card">
-        <div className="register-header">
-          <h2>Join projectHub</h2>
-          <p>Start your entrepreneurial journey today</p>
-        </div>
+    <div className="auth-page register-page">
+      <div className="auth-left">
+        <div className="auth-left-inner">
+          <div className="auth-brand">
+            <span className="auth-brand-icon">🎓</span>
+            <span className="auth-brand-name">projectHub</span>
+          </div>
 
-        <form onSubmit={handleSubmit} className="register-form">
+          <h1>
+            Build. <span>Connect.</span> Grow.
+          </h1>
+
+          <p>
+            Join student founders and mentors building ideas, teams, and impact.
+          </p>
+
+          <div className="auth-left-features">
+            <div className="auth-feature">🚀 Validate ideas</div>
+            <div className="auth-feature">🤝 Find your team</div>
+            <div className="auth-feature">🎓 Get mentorship</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="auth-right">
+        <div className="register-card">
+          <div className="register-header">
+            <h2>Join projectHub</h2>
+            <p>Start your entrepreneurial journey today</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="register-form">
           {/* Step 1: Basic Info */}
           {currentStep === 1 && (
             <div className="form-step active">
-              <h3 style={{color:"#8597b2"}}>Basic Information</h3>
-              
               <div className="input-group">
                 <label>Full Name</label>
                 <input
@@ -241,13 +268,17 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
               
               <div className="input-group">
                 <label>I'm looking for</label>
+                <p className="subtext">Choose at least one option to help us match you better.</p>
                 <div className="checkbox-group">
                   {['co-founder', 'developer', 'designer', 'mentor', 'investor'].map(option => (
                     <label key={option} className="checkbox-label">
                       <input
                         type="checkbox"
                         checked={formData.lookingFor.includes(option as any)}
-                        onChange={() => handleLookingForChange(option)}
+                        onChange={() => {
+                          handleLookingForChange(option);
+                          if (formError) setFormError('');
+                        }}
                       />
                       <span>{option.charAt(0).toUpperCase() + option.slice(1)}</span>
                     </label>
@@ -265,6 +296,8 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
                   rows={4}
                 />
               </div>
+
+              {formError && <div className="form-error">{formError}</div>}
             </div>
           )}
 
@@ -293,6 +326,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
         </div>
       </div>
     </div>
+  </div>
   );
 };
 
