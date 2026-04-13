@@ -16,12 +16,13 @@ def register():
         return jsonify({"error": "User exists"}), 400
 
     hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    normalized_role = str(data.get("role", "student")).strip().lower() or "student"
 
     user_doc = {
         "name": data.get("name", ""),
         "email": email,
         "password": hashed,
-        "role": data.get("role", "student"),
+        "role": normalized_role,
         "skills": data.get("skills", []),
         "interests": data.get("interests", []),
         "lookingFor": data.get("lookingFor", []),
@@ -36,7 +37,8 @@ def register():
 
     return jsonify({
         "access_token": token,
-        "user_id": str(user_id)
+        "user_id": str(user_id),
+        "role": normalized_role
     }), 201
 
 @auth_bp.route("/login", methods=["POST"])
@@ -50,4 +52,10 @@ def login():
         return jsonify({"error": "Invalid credentials"}), 401
 
     token = create_access_token(identity=str(user["_id"]))
-    return jsonify({"access_token": token, "user_id": str(user["_id"])})
+    return jsonify({
+        "access_token": token,
+        "user_id": str(user["_id"]),
+        "role": str(user.get("role", "student")).strip().lower(),
+        "name": user.get("name", data["email"].split("@")[0]),
+        "email": user.get("email", data["email"])
+    })

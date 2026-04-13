@@ -14,7 +14,7 @@ from routes.funding_routes import funding_bp
 from routes.notification_routes import notifications_bp
 from apscheduler.schedulers.background import BackgroundScheduler
 from jobs.reminders import send_inactivity_reminders
-
+from routes.mentorship_routes import mentorship_bp
 import atexit
 import os
 app = Flask(__name__)
@@ -46,6 +46,7 @@ app.register_blueprint(users_bp, url_prefix="/api/users")
 app.register_blueprint(tasks_bp, url_prefix="/api/tasks")
 app.register_blueprint(funding_bp, url_prefix="/api/funding")
 app.register_blueprint(notifications_bp, url_prefix="/api/notifications")
+app.register_blueprint(mentorship_bp, url_prefix="/api/mentorship")
 @app.route("/")
 def home():
     return {"message": "ProjectHub backend is running 🚀"}
