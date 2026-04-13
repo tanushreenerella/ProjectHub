@@ -27,7 +27,8 @@ CORS(
     supports_credentials=True,
     origins=[
         "http://localhost:5173",
-        "https://tanushreenerella.github.io"
+        "https://tanushreenerella.github.io",
+        "https://shambhavi-singh05.github.io"
     ]
 )
 
