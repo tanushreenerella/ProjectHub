@@ -9,3 +9,4 @@ MONGO_URI = os.getenv("MONGO_URI")
 JWT_TOKEN_LOCATION = ["headers"]
 JWT_HEADER_NAME = "Authorization"
 JWT_HEADER_TYPE = "Bearer"
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
