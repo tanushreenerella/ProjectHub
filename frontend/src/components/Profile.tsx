@@ -164,6 +164,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
           </div>
           <p className="profile-email">{profile.email}</p>
 
+          {/* ✅ FIXED BIO SECTION */}
           {editingBio ? (
             <div className="profile-bio-edit">
               <textarea
@@ -176,7 +177,13 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                 <button className="p-btn-primary" onClick={saveBio} disabled={saving}>
                   {saving ? "Saving..." : "Save"}
                 </button>
-                <button className="p-btn-ghost" onClick={() => { setEditingBio(false); setBio(profile.bio || ""); }}>
+                <button
+                  className="p-btn-ghost"
+                  onClick={() => {
+                    setEditingBio(false);
+                    setBio(profile.bio || "");
+                  }}
+                >
                   Cancel
                 </button>
               </div>
@@ -184,10 +191,9 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
           ) : (
             <div className="profile-bio-display">
               <p>{profile.bio || "No bio added yet."}</p>
-              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
-                <button className="p-btn-ghost" onClick={() => setEditingBio(true)}>Edit Bio</button>
-                <button className="p-btn-primary" onClick={openEditProfile}>✏️ Edit Skills & Interests</button>
-              </div>
+              <button className="p-btn-ghost" onClick={() => setEditingBio(true)}>
+                Edit Bio
+              </button>
             </div>
           )}
         </div>
