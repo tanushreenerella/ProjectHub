@@ -1,122 +1,120 @@
-/* src/components/FundingPortal.css */
+/* fundingPortal.css - Compact clean redesign */
+
 .funding-portal {
-  background: #0f172a;
-  border: 1px solid #24314b;
-  border-radius: 14px;
-  padding: 1.25rem;
-  margin-bottom: 1.5rem;
-  animation: slideUp 0.5s ease-out;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem;
   color: #e2e8f0;
 }
 
+/* Header */
 .funding-header {
   text-align: center;
-  margin-bottom: 1.35rem;
-  padding-bottom: 1.35rem;
-  border-bottom: 1px solid #273248;
+  margin-bottom: 1.25rem;
 }
 
 .funding-header h1 {
-  font-size: 2rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #60a5fa;
-  margin: 0 0 0.45rem 0;
+  margin: 0 0 0.2rem;
 }
 
 .funding-header p {
-  color: #9ca3af;
-  font-size: 1rem;
+  color: #64748b;
+  font-size: 0.82rem;
   margin: 0;
 }
 
+/* Stats */
 .funding-stats {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
-  margin-bottom: 1.4rem;
+  margin-bottom: 1rem;
 }
 
-.stat-card {
-  background: #121b2f;
-  border: 1px solid #1f2a42;
-  border-radius: 14px;
-  padding: 0.9rem 1rem;
-  min-height: auto;
+.funding-portal .stat-card {
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
+.funding-portal .stat-card:hover { border-color: #3b82f6; }
+
 .stat-label {
-  color: #94a3b8;
-  font-size: 0.85rem;
+  color: #64748b;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
 .stat-value {
-  color: #f8fbff;
-  font-size: 1.35rem;
+  color: #f8fafc;
+  font-size: 1.3rem;
   font-weight: 700;
 }
 
-/* Navigation Tabs */
+/* Tabs */
 .funding-tabs {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid #233048;
-  padding-bottom: 0.5rem;
+  gap: 0.35rem;
+  margin-bottom: 1rem;
+  background: #0f172a;
+  border-radius: 8px;
+  padding: 0.3rem;
+  width: fit-content;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .tab {
-  background: rgba(15, 23, 42, 0.95);
-  border: 1px solid transparent;
-  color: #cbd5e1;
-  padding: 0.75rem 1rem;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  padding: 0.35rem 0.875rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border-bottom: 2px solid transparent;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: 10px;
+  transition: all 0.15s ease;
 }
 
-.tab:hover {
-  background: rgba(96, 165, 250, 0.12);
-  color: #93c5fd;
-}
+.tab:hover { color: #94a3b8; }
 
 .tab.active {
-  color: #ffffff;
-  border-color: transparent;
-  background: #2563eb;
+  background: #1e293b;
+  color: #60a5fa;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
 .seed-btn {
-  margin-left: auto;
-  padding: 0.7rem 1rem;
-  border-radius: 10px;
-  border: 1px solid #2b4065;
-  background: #111827;
-  color: #cbd5e1;
-  font-weight: 600;
+  margin-left: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
-.seed-btn:hover {
-  border-color: #60a5fa;
-  color: #ffffff;
-}
+.seed-btn:hover { border-color: #3b82f6; color: #60a5fa; }
 
+/* Insights Panel */
 .funding-insights-panel {
-  margin-bottom: 1.35rem;
+  margin-bottom: 1rem;
   padding: 1rem;
-  background: #111b2d;
-  border: 1px solid #1f2d48;
-  border-radius: 16px;
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+  border-radius: 10px;
 }
 
 .funding-insights-header {
@@ -124,63 +122,76 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.875rem;
 }
 
 .funding-insights-header h2 {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.2rem;
   color: #f1f5f9;
-  font-size: 1.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
 }
 
 .funding-insights-header p {
   margin: 0;
-  color: #94a3b8;
+  color: #64748b;
+  font-size: 0.75rem;
 }
 
 .insights-select {
-  min-width: 240px;
+  min-width: 180px;
+  padding: 0.4rem 0.6rem;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 7px;
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  outline: none;
 }
 
+.insights-select:focus { border-color: #3b82f6; }
+
 .selected-project-pill {
-  margin-bottom: 1rem;
-  padding: 0.8rem 1rem;
+  margin-bottom: 0.875rem;
+  padding: 0.4rem 0.875rem;
   border-radius: 999px;
   display: inline-flex;
-  gap: 0.35rem;
+  gap: 0.3rem;
   align-items: center;
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.2);
-  color: #cbd5e1;
+  background: rgba(59,130,246,0.08);
+  border: 1px solid rgba(59,130,246,0.18);
+  color: #94a3b8;
+  font-size: 0.75rem;
 }
+
+.selected-project-pill strong { color: #60a5fa; }
 
 .funding-insights-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
 }
 
 .readiness-card,
 .insights-list-card,
 .top-match-card,
 .empty-state-card {
-  background: #121d33;
-  border: 1px solid #1f2d48;
-  border-radius: 14px;
-  padding: 0.95rem;
+  background: #0f172a;
+  border: 1px solid #2d3f55;
+  border-radius: 8px;
+  padding: 0.875rem;
 }
 
 .readiness-card {
   display: flex;
-  gap: 0.9rem;
+  gap: 0.75rem;
   align-items: center;
 }
 
 .readiness-score-ring {
-  width: 72px;
-  height: 72px;
+  width: 56px; height: 56px;
   border-radius: 50%;
-  border: 5px solid rgba(96, 165, 250, 0.28);
+  border: 3px solid rgba(96,165,250,0.25);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -189,1304 +200,551 @@
 }
 
 .readiness-score-ring span {
-  font-size: 1.45rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #f8fafc;
   line-height: 1;
 }
 
-.readiness-score-ring small {
-  color: #94a3b8;
-  font-size: 0.75rem;
-}
+.readiness-score-ring small { color: #64748b; font-size: 0.65rem; }
 
-.readiness-copy h3 {
-  margin: 0 0 0.4rem;
+.readiness-copy h3 { margin: 0 0 0.3rem; color: #f1f5f9; font-size: 0.85rem; }
+.readiness-copy p { margin: 0; color: #94a3b8; line-height: 1.5; font-size: 0.78rem; }
+
+.insights-list-card h4, .top-matches-strip h3 {
+  margin: 0 0 0.5rem;
   color: #f1f5f9;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-.readiness-copy p {
-  margin: 0;
-  color: #cbd5e1;
-  line-height: 1.55;
-}
-
-.insights-list-card h4,
-.top-matches-strip h3 {
-  margin: 0 0 0.8rem;
-  color: #f8fafc;
-}
-
-.insights-list-card ul,
-.top-match-card ul,
-.match-reasons {
+.insights-list-card ul, .top-match-card ul, .match-reasons {
   margin: 0;
   padding-left: 1rem;
 }
 
-.insights-list-card li,
-.top-match-card li,
-.match-reasons li {
-  color: #cbd5e1;
-  margin-bottom: 0.45rem;
-  line-height: 1.45;
+.insights-list-card li, .top-match-card li, .match-reasons li {
+  color: #94a3b8;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+  font-size: 0.75rem;
 }
 
-.top-matches-strip {
-  margin-top: 1rem;
-}
+.top-matches-strip { margin-top: 0.875rem; }
 
 .top-matches-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
 }
 
 .top-match-header {
   display: flex;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: flex-start;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
-.top-match-header h4 {
-  margin: 0;
-  color: #f1f5f9;
-}
-
-.top-match-card p {
-  margin: 0 0 0.8rem;
-  color: #94a3b8;
-}
+.top-match-header h4 { margin: 0; color: #f1f5f9; font-size: 0.8rem; }
+.top-match-card p { margin: 0 0 0.5rem; color: #64748b; font-size: 0.72rem; }
 
 .match-score-badge {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.35rem 0.7rem;
+  padding: 0.15rem 0.5rem;
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  background: rgba(34,197,94,0.1);
+  border: 1px solid rgba(34,197,94,0.25);
   color: #4ade80;
-  font-size: 0.8rem;
+  font-size: 0.68rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .match-highlight {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #22314b;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #2d3f55;
 }
 
-.compact-loading {
-  padding: 1.5rem 0;
-}
-
-.insights-empty-state,
-.empty-state-card {
+.compact-loading, .loading {
   text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-size: 0.82rem;
 }
 
-.insights-empty-state p,
-.empty-state-card p {
-  color: #94a3b8;
-  margin: 0.5rem 0 0;
+.insights-empty-state, .empty-state-card {
+  text-align: center;
+  padding: 1.5rem;
 }
 
-.empty-state-card h3 {
-  margin: 0;
-  color: #f1f5f9;
+.insights-empty-state p, .empty-state-card p {
+  color: #64748b;
+  margin: 0.4rem 0 0;
+  font-size: 0.78rem;
 }
 
-.applications-actions {
-  margin-bottom: 1rem;
-  display: flex;
-  justify-content: flex-end;
-}
+.empty-state-card h3 { margin: 0; color: #94a3b8; font-size: 0.9rem; }
 
-/* Filters Bar */
+/* Filters */
 .filters-bar {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 8px;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 .search-input {
   flex: 1;
-  padding: 0.75rem 1rem;
-  border: 1px solid #475569;
-  border-radius: 8px;
-  background: #1e293b;
+  min-width: 160px;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid #334155;
+  border-radius: 7px;
+  background: #0f172a;
   color: #e2e8f0;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
-
-.search-input:focus {
+  font-size: 0.8rem;
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-.search-input::placeholder {
-  color: #64748b;
-}
+.search-input:focus { border-color: #3b82f6; }
+.search-input::placeholder { color: #475569; }
 
 .filter-select {
-  padding: 0.75rem 1rem;
-  border: 1px solid #475569;
-  border-radius: 8px;
-  background: #1e293b;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #334155;
+  border-radius: 7px;
+  background: #0f172a;
   color: #e2e8f0;
-  font-size: 1rem;
+  font-size: 0.78rem;
+  outline: none;
   cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 150px;
 }
 
-.filter-select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+.filter-select:focus { border-color: #3b82f6; }
 
 /* Opportunities Grid */
 .opportunities-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 1rem;
-  animation: fadeIn 0.4s ease-out;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.875rem;
 }
 
 .opportunity-card {
-  background: #111b2d;
-  border: 1px solid #1f2d48;
-  border-radius: 14px;
-  padding: 1rem;
-  transition: all 0.25s ease;
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+  border-radius: 10px;
+  padding: 0.875rem;
+  transition: all 0.2s ease;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
 .opportunity-card:hover {
-  border-color: #60a5fa;
+  border-color: #3b82f6;
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 0.75rem;
-  margin-bottom: 0.9rem;
+  gap: 0.5rem;
 }
 
 .card-header h3 {
   color: #f8fafc;
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 600;
   margin: 0;
   flex: 1;
 }
 
 .category-badge {
-  padding: 0.25rem 0.7rem;
-  border-radius: 18px;
-  font-size: 0.72rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
   font-weight: 700;
   text-transform: capitalize;
-  margin-left: 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.category-badge.grant { background: rgba(34, 197, 94, 0.18); color: #22c55e; border: 1px solid #22c55e; }
-.category-badge.competition { background: rgba(234, 179, 8, 0.18); color: #eab308; border: 1px solid #eab308; }
-.category-badge.investor { background: rgba(59, 130, 246, 0.18); color: #3b82f6; border: 1px solid #3b82f6; }
-.category-badge.crowdfunding { background: rgba(168, 85, 247, 0.18); color: #a855f7; border: 1px solid #a855f7; }
+.category-badge.grant { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
+.category-badge.competition { background: rgba(234,179,8,0.12); color: #eab308; border: 1px solid rgba(234,179,8,0.25); }
+.category-badge.investor { background: rgba(59,130,246,0.12); color: #3b82f6; border: 1px solid rgba(59,130,246,0.25); }
+.category-badge.crowdfunding { background: rgba(168,85,247,0.12); color: #a855f7; border: 1px solid rgba(168,85,247,0.25); }
 
 .opportunity-meta {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
-  margin-bottom: 0.9rem;
+  gap: 0.4rem;
 }
 
-.meta-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.18rem;
-}
-
-.meta-item strong {
-  color: #94a3b8;
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.meta-item span {
-  color: #e2e8f0;
-  font-weight: 600;
-}
-
-.amount {
-  color: #22c55e !important;
-  font-weight: 600;
-}
+.meta-item { display: flex; flex-direction: column; gap: 0.1rem; }
+.meta-item strong { color: #475569; font-size: 0.68rem; font-weight: 600; }
+.meta-item span { color: #e2e8f0; font-size: 0.78rem; font-weight: 500; }
+.amount { color: #22c55e !important; }
 
 .stage {
-  padding: 0.25rem 0.5rem;
-  border-radius: 6px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  display: inline-block;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 600;
   text-transform: capitalize;
 }
 
-.stage.ideation { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
-.stage.prototype { background: rgba(234, 179, 8, 0.2); color: #eab308; }
-.stage.launched { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+.stage.ideation { background: rgba(59,130,246,0.12); color: #60a5fa; }
+.stage.prototype { background: rgba(234,179,8,0.12); color: #fbbf24; }
+.stage.launched { background: rgba(34,197,94,0.12); color: #34d399; }
 
 .description {
-  color: #cbd5e1;
-  line-height: 1.5;
-  margin-bottom: 0.85rem;
-  flex: 1;
-}
-
-.eligibility {
-  margin-bottom: 0.85rem;
-}
-
-.eligibility strong {
   color: #94a3b8;
-  font-size: 0.82rem;
-  display: block;
-  margin-bottom: 0.4rem;
-}
-
-.eligibility ul {
-  list-style: none;
-  padding: 0;
+  line-height: 1.5;
+  font-size: 0.78rem;
   margin: 0;
 }
 
-.eligibility li {
-  color: #cbd5e1;
-  padding: 0.2rem 0;
-  position: relative;
-  padding-left: 1.4rem;
-  font-size: 0.84rem;
+.eligibility { font-size: 0.75rem; }
+
+.eligibility strong {
+  color: #64748b;
+  font-size: 0.68rem;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
-.eligibility li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: #22c55e;
-  font-weight: bold;
+.eligibility ul { list-style: none; padding: 0; margin: 0; }
+
+.eligibility li {
+  color: #94a3b8;
+  padding: 0.1rem 0;
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.75rem;
 }
+
+.eligibility li::before { content: '✓'; position: absolute; left: 0; color: #22c55e; font-size: 0.65rem; }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-bottom: 1rem;
+  gap: 0.3rem;
 }
 
 .tag {
-  background: rgba(96, 165, 250, 0.12);
-  color: #93c5fd;
-  padding: 0.2rem 0.6rem;
+  background: rgba(96,165,250,0.08);
+  color: #60a5fa;
+  padding: 0.1rem 0.45rem;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  border: 1px solid rgba(96, 165, 250, 0.22);
+  border: 1px solid rgba(96,165,250,0.18);
 }
 
 .card-actions {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
   margin-top: auto;
+  padding-top: 0.25rem;
 }
 
+/* Shared buttons */
 .btn-primary, .btn-secondary, .btn-outline {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
+  padding: 0.45rem 0.875rem;
+  border-radius: 7px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
+  font-size: 0.78rem;
   flex: 1;
+  border: none;
 }
 
-.btn-primary {
-  background: #3b82f6;
-  color: white;
-  border: 1px solid #3b82f6;
-}
-
-.btn-primary:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-}
+.btn-primary { background: #3b82f6; color: white; }
+.btn-primary:hover:not(:disabled) { background: #2563eb; }
+.btn-primary:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
 
 .btn-secondary {
   background: transparent;
-  border: 1px solid #475569;
-  color: #94a3b8;
+  border: 1px solid #334155;
+  color: #64748b;
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
+.btn-secondary:hover { border-color: #3b82f6; color: #60a5fa; }
 
 .btn-outline {
   background: transparent;
-  border: 1px solid #475569;
-  color: #94a3b8;
+  border: 1px solid #334155;
+  color: #64748b;
 }
 
-.btn-outline:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #3b82f6;
-  color: #3b82f6;
-}
+.btn-outline:hover { border-color: #3b82f6; color: #60a5fa; }
 
-/* Applications Tab */
-.applications-tab {
-  animation: fadeIn 0.5s ease-out;
-}
+/* Applications */
+.applications-tab { display: flex; flex-direction: column; gap: 0.875rem; }
 
 .applications-header {
-  margin-bottom: 1.5rem;
-  padding: 1rem;
-  background: #111b2d;
-  border: 1px solid #1f2d48;
-  border-radius: 12px;
+  padding: 0.875rem 1rem;
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+  border-radius: 10px;
 }
 
-.applications-header h2 {
-  color: #f8fafc;
-  margin: 0 0 0.35rem 0;
-  font-size: 1.35rem;
-}
+.applications-header h2 { color: #f1f5f9; margin: 0 0 0.2rem; font-size: 0.95rem; }
+.applications-header p { color: #64748b; margin: 0; font-size: 0.75rem; }
 
-.applications-header p {
-  color: #94a3b8;
-  margin: 0;
-  font-size: 0.95rem;
-}
+.applications-actions { display: flex; justify-content: flex-end; }
 
-.applications-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.95rem;
-}
+.applications-list { display: flex; flex-direction: column; gap: 0.6rem; }
 
 .application-card {
-  background: #111b2d;
-  border: 1px solid #1f2d48;
-  border-radius: 14px;
-  padding: 1rem;
-  transition: all 0.25s ease;
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+  border-radius: 10px;
+  padding: 0.875rem;
+  transition: border-color 0.15s ease;
 }
 
-.application-card:hover {
-  border-color: #60a5fa;
-  transform: translateY(-1px);
-}
+.application-card:hover { border-color: #3b82f6; }
 
 .app-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 0.75rem;
-  margin-bottom: 0.9rem;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
 }
 
-.app-header h4 {
-  color: #f8fafc;
-  font-size: 1.05rem;
-  margin: 0 0 0.4rem 0;
-}
-
-.app-header p {
-  color: #94a3b8;
-  margin: 0;
-  font-size: 0.88rem;
-}
+.app-header h4 { color: #f8fafc; font-size: 0.875rem; margin: 0 0 0.2rem; }
+.app-header p { color: #64748b; margin: 0; font-size: 0.72rem; }
 
 .status-badge {
-  padding: 0.45rem 0.9rem;
-  border-radius: 18px;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
   color: white;
-  font-size: 0.72rem;
+  font-size: 0.65rem;
   font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .app-details {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.85rem;
-  margin-bottom: 1.2rem;
-  padding: 0.95rem;
-  background: #121d33;
-  border-radius: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: #0f172a;
+  border-radius: 7px;
 }
 
-.detail {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
+.detail { display: flex; flex-direction: column; gap: 0.1rem; }
+.detail strong { color: #475569; font-size: 0.68rem; font-weight: 600; }
+.detail span { color: #e2e8f0; font-size: 0.75rem; }
 
-.detail strong {
-  color: #94a3b8;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.detail span {
-  color: #e2e8f0;
-  font-weight: 500;
-}
-
-.app-actions {
-  display: flex;
-  gap: 1rem;
-}
+.app-actions { display: flex; gap: 0.5rem; }
 
 .no-applications {
   text-align: center;
-  padding: 3rem;
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 12px;
-}
-
-.no-applications h3 {
-  color: #94a3b8;
-  margin: 0 0 0.5rem 0;
-}
-
-.no-applications p {
+  padding: 2rem;
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+  border-radius: 10px;
   color: #64748b;
-  margin: 0;
+  font-size: 0.82rem;
 }
 
-/* Investors Tab */
-.investors-tab {
-  animation: fadeIn 0.5s ease-out;
-}
+.no-applications h3 { color: #94a3b8; margin: 0 0 0.4rem; font-size: 0.9rem; }
+
+/* Investors */
+.investors-tab { display: flex; flex-direction: column; gap: 0.875rem; }
 
 .investors-header {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+  border-radius: 10px;
 }
 
-.investors-header h2 {
-  color: #f1f5f9;
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-}
-
-.investors-header p {
-  color: #94a3b8;
-  margin: 0;
-}
+.investors-header h2 { color: #f1f5f9; margin: 0 0 0.2rem; font-size: 0.95rem; }
+.investors-header p { color: #64748b; margin: 0; font-size: 0.75rem; }
 
 .investors-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.875rem;
 }
 
 .investor-card {
-  background: #111b2d;
-  border: 1px solid #1f2d48;
-  border-radius: 14px;
-  padding: 1rem;
-  transition: all 0.25s ease;
-}
-
-.investor-card:hover {
-  border-color: #60a5fa;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
-}
-
-.investor-header {
+  background: #1e293b;
+  border: 1px solid #2d3f55;
+  border-radius: 10px;
+  padding: 0.875rem;
+  transition: border-color 0.2s ease;
   display: flex;
-  gap: 0.85rem;
-  margin-bottom: 0.95rem;
+  flex-direction: column;
+  gap: 0.6rem;
 }
+
+.investor-card:hover { border-color: #3b82f6; }
+
+.investor-header { display: flex; gap: 0.75rem; align-items: flex-start; }
 
 .investor-avatar {
-  width: 50px;
-  height: 50px;
+  width: 38px; height: 38px;
   border-radius: 50%;
   background: #3b82f6;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 700;
   flex-shrink: 0;
 }
 
-.investor-info h3 {
-  color: #f1f5f9;
-  margin: 0 0 0.25rem 0;
-  font-size: 1.05rem;
-}
+.investor-info h3 { color: #f1f5f9; margin: 0 0 0.2rem; font-size: 0.875rem; }
+.company { color: #3b82f6; font-weight: 500; margin: 0 0 0.2rem; font-size: 0.75rem; }
+.investment-range { color: #22c55e; font-weight: 600; margin: 0; font-size: 0.72rem; }
 
-.company {
-  color: #3b82f6;
-  font-weight: 500;
-  margin: 0 0 0.25rem 0;
-}
+.investor-bio { color: #94a3b8; line-height: 1.5; font-size: 0.75rem; margin: 0; }
 
-.investment-range {
-  color: #22c55e;
-  font-weight: 600;
-  margin: 0;
-  font-size: 0.875rem;
-}
-
-.investor-bio {
-  color: #cbd5e1;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-  font-size: 0.875rem;
-}
-
-.focus-areas {
-  margin-bottom: 1.5rem;
-}
-
-.focus-areas strong {
-  color: #94a3b8;
-  font-size: 0.875rem;
+.focus-areas strong, .previous-investments strong {
+  color: #64748b;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   display: block;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.3rem;
 }
 
-.focus-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
+.focus-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 
 .focus-tag {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-  padding: 0.375rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  background: rgba(59,130,246,0.08);
+  color: #60a5fa;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.65rem;
   font-weight: 500;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  border: 1px solid rgba(59,130,246,0.18);
 }
 
-.previous-investments {
-  margin-bottom: 1.5rem;
-}
-
-.previous-investments strong {
-  color: #94a3b8;
-  font-size: 0.875rem;
-  display: block;
-  margin-bottom: 0.5rem;
-}
-
-.previous-investments ul {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+.previous-investments ul { list-style: none; padding: 0; margin: 0; }
 
 .previous-investments li {
-  color: #cbd5e1;
-  padding: 0.25rem 0;
+  color: #94a3b8;
+  padding: 0.1rem 0;
   position: relative;
-  padding-left: 1.5rem;
-  font-size: 0.875rem;
+  padding-left: 1rem;
+  font-size: 0.72rem;
 }
 
-.previous-investments li::before {
-  content: '✓';
-  position: absolute;
-  left: 0;
-  color: #22c55e;
-  font-weight: bold;
-}
+.previous-investments li::before { content: '✓'; position: absolute; left: 0; color: #22c55e; font-size: 0.65rem; }
 
-.investor-actions {
-  display: flex;
-  gap: 1rem;
-}
+.investor-actions { display: flex; gap: 0.5rem; margin-top: auto; }
 
-/* Modal Styles */
+/* Modal */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  inset: 0;
+  background: rgba(0,0,0,0.65);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 2rem;
-  animation: fadeIn 0.3s ease-out;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
 }
 
 .application-modal {
   background: #1e293b;
   border: 1px solid #334155;
   border-radius: 12px;
-  width: 100%;
-  max-width: 600px;
-  max-height: 90vh;
+  width: min(560px, 100%);
+  max-height: 85vh;
   overflow-y: auto;
-  animation: slideUp 0.3s ease-out;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
 
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem 1.1rem 0.875rem;
   border-bottom: 1px solid #334155;
 }
 
-.modal-header h2 {
-  color: #f1f5f9;
-  margin: 0;
-  font-size: 1.5rem;
-}
+.modal-header h2 { color: #f1f5f9; margin: 0; font-size: 1rem; font-weight: 600; }
 
 .close-btn {
   background: none;
   border: none;
-  color: #94a3b8;
-  font-size: 2rem;
+  color: #64748b;
+  font-size: 1.25rem;
   cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
+  padding: 0.2rem;
+  transition: color 0.15s;
 }
 
-.close-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-}
+.close-btn:hover { color: #f1f5f9; }
 
-.modal-form {
-  padding: 1.5rem;
-}
+.modal-form { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.875rem; }
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
+.form-group { display: flex; flex-direction: column; gap: 0.35rem; }
 
-.form-group label {
-  display: block;
-  color: #e2e8f0;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
+.form-group label { color: #94a3b8; font-size: 0.75rem; font-weight: 600; }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #475569;
-  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #334155;
+  border-radius: 7px;
   background: #0f172a;
   color: #e2e8f0;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
 }
 
 .form-group input:focus,
 .form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
+.form-group textarea:focus { border-color: #3b82f6; }
 
-.form-group textarea {
-  resize: vertical;
-  min-height: 120px;
-  font-family: inherit;
-}
+.form-group textarea { resize: vertical; min-height: 100px; line-height: 1.55; }
 
 .form-actions {
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  gap: 0.6rem;
+  padding-top: 0.5rem;
   border-top: 1px solid #334155;
 }
 
-/* Loading State */
-.loading {
-  text-align: center;
-  padding: 3rem;
-  color: #94a3b8;
-  font-size: 1.1rem;
-}
-
-/* Animations */
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-/* Responsive Design */
+/* Responsive */
 @media (max-width: 768px) {
-  .funding-portal {
-    padding: 1.5rem;
-    margin: 1rem;
-  }
-
-  .funding-tabs {
-    flex-direction: column;
-  }
-
-  .funding-stats,
-  .funding-insights-grid,
-  .top-matches-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card,
-  .funding-insights-header,
-  .readiness-card {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .seed-btn {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .tab {
-    text-align: left;
-    border-bottom: 1px solid #334155;
-    border-left: 2px solid transparent;
-    border-radius: 0;
-  }
-
-  .tab.active {
-    border-left-color: #3b82f6;
-    border-bottom-color: #334155;
-  }
-
-  .filters-bar {
-    flex-direction: column;
-  }
-
-  .opportunities-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .opportunity-meta {
-    grid-template-columns: 1fr;
-  }
-
-  .card-actions {
-    flex-direction: column;
-  }
-
-  .app-header {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-
-  .app-details {
-    grid-template-columns: 1fr;
-  }
-
-  .app-actions {
-    flex-direction: column;
-  }
-
-  .investors-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .investor-header {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .investor-avatar {
-    align-self: center;
-  }
-}
-
-/* ========================================
-   RESPONSIVE DESIGN
-   ======================================== */
-
-/* Large screens (1200px+) - Default styles above */
-
-/* Medium screens (768px - 1199px) */
-@media (max-width: 1199px) {
-  .funding-portal {
-    padding: 1.5rem;
-  }
-
-  .funding-header h1 {
-    font-size: 2.25rem;
-  }
-
-  .opportunities-grid {
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  }
-
-  .opportunity-card {
-    padding: 1.25rem;
-  }
-
-  .applications-list {
-    gap: 1rem;
-  }
-
-  .application-item {
-    padding: 1rem;
-  }
-
-  .investors-grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  }
-
-  .investor-card {
-    padding: 1.25rem;
-  }
-}
-
-/* Small screens (480px - 767px) */
-@media (max-width: 767px) {
-  .funding-portal {
-    padding: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .funding-header {
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
-  }
-
-  .funding-header h1 {
-    font-size: 2rem;
-  }
-
-  .funding-header p {
-    font-size: 1rem;
-  }
-
-  .funding-tabs {
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  .tab {
-    padding: 0.75rem 1rem;
-    font-size: 0.9rem;
-  }
-
-  .filters-section {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .filter-group {
-    flex: 1;
-  }
-
-  .filter-select, .search-input {
-    padding: 0.625rem;
-    font-size: 0.9rem;
-  }
-
-  .opportunities-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .opportunity-card {
-    padding: 1rem;
-  }
-
-  .opportunity-header h3 {
-    font-size: 1.125rem;
-  }
-
-  .opportunity-meta {
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-start;
-  }
-
-  .opportunity-amount {
-    font-size: 1.125rem;
-  }
-
-  .opportunity-description {
-    font-size: 0.9rem;
-  }
-
-  .opportunity-tags {
-    gap: 0.375rem;
-  }
-
-  .tag {
-    font-size: 0.8rem;
-    padding: 0.25rem 0.5rem;
-  }
-
-  .apply-btn {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .applications-list {
-    gap: 0.75rem;
-  }
-
-  .application-item {
-    padding: 0.875rem;
-  }
-
-  .application-header h4 {
-    font-size: 1rem;
-  }
-
-  .application-meta {
-    flex-direction: column;
-    gap: 0.375rem;
-    align-items: flex-start;
-  }
-
-  .application-status {
-    font-size: 0.875rem;
-  }
-
-  .investors-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .investor-card {
-    padding: 1rem;
-  }
-
-  .investor-header h4 {
-    font-size: 1.125rem;
-  }
-
-  .investor-focus {
-    font-size: 0.9rem;
-  }
-
-  .investor-range {
-    font-size: 0.95rem;
-  }
-
-  .contact-btn {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .application-form {
-    gap: 1rem;
-  }
-
-  .form-group {
-    gap: 0.5rem;
-  }
-
-  .form-group label {
-    font-size: 0.9rem;
-  }
-
-  .form-input, .form-textarea {
-    padding: 0.75rem;
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
-
-  .form-textarea {
-    min-height: 100px;
-  }
-
-  .investor-actions, .form-actions {
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .btn-primary, .btn-secondary {
-    padding: 0.875rem;
-    font-size: 0.9rem;
-  }
-
-  .modal-overlay {
-    padding: 0.75rem;
-  }
-
-  .application-modal {
-    margin: 0.75rem;
-    max-width: none;
-    width: auto;
-  }
-
-  .modal-header h2 {
-    font-size: 1.25rem;
-  }
-
-  .modal-content {
-    padding: 1rem;
-  }
-}
-
-/* Extra small screens (320px - 479px) */
-@media (max-width: 479px) {
-  .funding-portal {
-    padding: 0.875rem;
-    margin-bottom: 1rem;
-    border-radius: 8px;
-  }
-
-  .funding-header {
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-  }
-
-  .funding-header h1 {
-    font-size: 1.75rem;
-  }
-
-  .funding-header p {
-    font-size: 0.95rem;
-  }
-
-  .funding-tabs {
-    gap: 0.125rem;
-  }
-
-  .tab {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.85rem;
-  }
-
-  .filters-section {
-    gap: 0.75rem;
-  }
-
-  .filter-select, .search-input {
-    padding: 0.5rem;
-    font-size: 0.875rem;
-  }
-
-  .opportunities-grid {
-    gap: 0.75rem;
-  }
-
-  .opportunity-card {
-    padding: 0.875rem;
-  }
-
-  .opportunity-header h3 {
-    font-size: 1rem;
-  }
-
-  .opportunity-amount {
-    font-size: 1rem;
-  }
-
-  .opportunity-description {
-    font-size: 0.875rem;
-  }
-
-  .opportunity-tags {
-    gap: 0.25rem;
-  }
-
-  .tag {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.4rem;
-  }
-
-  .apply-btn {
-    padding: 0.625rem;
-    font-size: 0.875rem;
-  }
-
-  .applications-list {
-    gap: 0.5rem;
-  }
-
-  .application-item {
-    padding: 0.75rem;
-  }
-
-  .application-header h4 {
-    font-size: 0.95rem;
-  }
-
-  .application-status {
-    font-size: 0.8rem;
-  }
-
-  .investors-grid {
-    gap: 0.75rem;
-  }
-
-  .investor-card {
-    padding: 0.875rem;
-  }
-
-  .investor-header h4 {
-    font-size: 1rem;
-  }
-
-  .investor-focus {
-    font-size: 0.875rem;
-  }
-
-  .investor-range {
-    font-size: 0.9rem;
-  }
-
-  .contact-btn {
-    padding: 0.625rem;
-    font-size: 0.875rem;
-  }
-
-  .application-form {
-    gap: 0.875rem;
-  }
-
-  .form-group label {
-    font-size: 0.875rem;
-  }
-
-  .form-input, .form-textarea {
-    padding: 0.625rem;
-    font-size: 16px; /* Prevent zoom on iOS */
-  }
-
-  .form-textarea {
-    min-height: 80px;
-  }
-
-  .btn-primary, .btn-secondary {
-    padding: 0.75rem;
-    font-size: 0.875rem;
-  }
-
-  .modal-overlay {
-    padding: 0.5rem;
-  }
-
-  .application-modal {
-    margin: 0.5rem;
-  }
-
-  .modal-header h2 {
-    font-size: 1.125rem;
-  }
-
-  .modal-content {
-    padding: 0.875rem;
-  }
-}
-
-/* Funding stat override to avoid collision with Home.css stat-card styles */
-.funding-portal .funding-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.85rem;
-  margin: 1.25rem 0 1.5rem;
-}
-
-.funding-portal .funding-stats .stat-card {
-  background: #162133;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  padding: 0.9rem 1rem;
-  min-height: 88px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  transform: none;
-  box-shadow: none;
-}
-
-.funding-portal .funding-stats .stat-card:hover {
-  transform: none;
-  border-color: #41577a;
-}
-
-.funding-portal .funding-stats .stat-label {
-  color: #9fb0cc;
-  font-size: 0.92rem;
-  font-weight: 600;
-}
-
-.funding-portal .funding-stats .stat-value {
-  color: #f8fbff;
-  font-size: 1.45rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-@media (max-width: 768px) {
-  .funding-portal .funding-stats {
-    grid-template-columns: 1fr;
-  }
-
-  .funding-portal .funding-stats .stat-card {
-    min-height: auto;
-  }
+  .funding-portal { padding: 1rem; }
+  .funding-stats { grid-template-columns: 1fr; }
+  .funding-insights-grid { grid-template-columns: 1fr; }
+  .top-matches-grid { grid-template-columns: 1fr; }
+  .opportunities-grid { grid-template-columns: 1fr; }
+  .investors-grid { grid-template-columns: 1fr; }
+  .funding-tabs { flex-wrap: wrap; width: 100%; }
+  .filters-bar { flex-direction: column; }
+  .funding-insights-header { flex-direction: column; }
 }
