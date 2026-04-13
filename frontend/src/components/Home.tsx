@@ -452,7 +452,7 @@ useEffect(() => {
         {activeTab === 'dashboard' && (
           <div className="dashboard">
             <div className="dashboard-header">
-              <h1>{isMentor ? 'Mentor Dashboard' : 'Dashboard'}</h1>
+              
               <p>
                 {isMentor
                   ? 'Manage your mentoring activity, review requests, and support students.'
@@ -517,11 +517,17 @@ useEffect(() => {
                   </>
                 ) : (
                   <>
+                  <button 
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('projects')}
+                    >
+                      📁 View My Projects
+                    </button>
                     <button 
                       className="action-btn secondary"
                       onClick={() => setActiveTab('ai')}
                     >
-                      🤖 AI Proposal Assistant
+                      🤖 Assistance
                     </button>
                     <button 
                       className="action-btn secondary"
@@ -535,7 +541,12 @@ useEffect(() => {
                     >
                       💼 Apply for Funding
                     </button>
-                  </>
+                   <button 
+                      className="action-btn secondary"
+                      onClick={() => setActiveTab('mentorship')}
+                    >
+                      🧑‍🏫 Mentorship
+                    </button></>
                 )}
               </div>
             </div>

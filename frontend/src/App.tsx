@@ -101,6 +101,24 @@ const App: React.FC = () => {
     }
   }
 
+  const handleGoogleSignIn = async (idToken: string) => {
+    try {
+      const resp = await axios.post(`${import.meta.env.VITE_API_URL}/api/auth/google-login`, { id_token: idToken })
+      const { access_token, user_id, role, name, email: returnedEmail } = resp.data || {}
+      if (access_token) localStorage.setItem('csh_token', access_token)
+
+      handleLogin({
+        id: user_id || Math.random().toString(36).slice(2, 9),
+        name: name || returnedEmail?.split('@')[0] || '',
+        email: returnedEmail || '',
+        role: String(role || 'student').trim().toLowerCase()
+      })
+      window.location.assign('#/')
+    } catch (err: any) {
+      alert(err?.response?.data?.error || 'Google sign-in failed')
+    }
+  }
+
   return (
     <HashRouter>
       <Routes>
@@ -116,6 +134,7 @@ const App: React.FC = () => {
           user ? <Navigate to="/" replace /> :
           <SignIn
             onSignIn={handleSignIn}
+            onGoogleSignIn={handleGoogleSignIn}
             onSwitchToRegister={() => window.location.assign('#/register')}
           />
         } />

@@ -149,21 +149,17 @@
 /* Dashboard */
 .dashboard-header {
   margin-bottom: 1.35rem;
+  margin-top:1rem;
 }
 
-.dashboard-header h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #f8fafc;
-  margin-bottom: 0.35rem;
-}
 
 .dashboard-header p {
   color: #a1aebf;
   font-size: 0.98rem;
-  margin: 0;
   max-width: 720px;
   line-height: 1.5;
+  text-align: center;
+  margin-bottom:1rem;
 }
 
 /* Stats Cards */
@@ -172,6 +168,7 @@
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   margin-bottom: 2rem;
+  margin-top:1rem;
 }
 
 .stat-card {
@@ -260,6 +257,7 @@
   background: transparent;
   border: 1px solid #475569;
   color: #94a3b8;
+  margin-left:0.7rem;
 }
 
 .action-btn.secondary:hover {
