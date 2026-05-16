@@ -38,6 +38,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
   const [messageInput, setMessageInput] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [newMessageToast, setNewMessageToast] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   console.log('[Chat] component mounted/updated with socket:', socket ? '✅ present' : '❌ null');
@@ -151,7 +152,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
           senderId: data.sender_id || data.senderId,
           senderName: data.sender_name || data.senderName || 'Unknown',
           text: data.text,
-          timestamp: new Date(data.timestamp || Date.now()),
+          timestamp: new Date(typeof data.timestamp === 'string' && !data.timestamp.endsWith('Z') ? data.timestamp + 'Z' : (data.timestamp || Date.now())),
         };
 
         console.log('[Chat] appending message to messagesMap for convId:', convId);
@@ -185,20 +186,20 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
             senderId: data.sender_id || data.senderId,
             senderName: data.sender_name || data.senderName || 'Unknown',
             text: data.text,
-            timestamp: new Date(data.timestamp || Date.now()),
+            timestamp: new Date(typeof data.timestamp === 'string' && !data.timestamp.endsWith('Z') ? data.timestamp + 'Z' : (data.timestamp || Date.now())),
           };
           return [...prev, newMessage];
         });
       } else {
         console.log('[Chat] conversation not open, incrementing unread');
-        // increment unreadCount for corresponding conversation (other participant)
+        const senderName = data.sender_name || data.senderName || 'Someone';
+        setNewMessageToast(`💬 ${senderName}: ${(data.text || '').slice(0, 60)}`);
+        setTimeout(() => setNewMessageToast(null), 4000);
         setConversations((prev) =>
           prev.map((conv) => {
-            const otherId = conv.id;
-            // conversation id for this pair
-            const id1 = [currentUser.id, otherId].sort().join('-');
+            const id1 = [currentUser.id, conv.id].sort().join('-');
             if (id1 === convId) {
-              return { ...conv, unreadCount: (conv.unreadCount || 0) + 1, lastMessage: data.text, lastMessageTime: new Date(data.timestamp || Date.now()) };
+              return { ...conv, unreadCount: (conv.unreadCount || 0) + 1, lastMessage: data.text, lastMessageTime: new Date(typeof data.timestamp === 'string' && !data.timestamp.endsWith('Z') ? data.timestamp + 'Z' : (data.timestamp || Date.now())) };
             }
             return conv;
           })
@@ -224,7 +225,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
         senderId: m.sender_id || m.senderId,
         senderName: m.sender_name || m.senderName || 'Unknown',
         text: m.text,
-        timestamp: new Date(m.timestamp),
+        timestamp: new Date(typeof m.timestamp === 'string' && !m.timestamp.endsWith('Z') ? m.timestamp + 'Z' : m.timestamp),
       }));
 
       console.log('[Chat] loaded', messagesData.length, 'messages for convId:', convId);
@@ -296,31 +297,42 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
     setSending(false);
   };
 
-  // Format time
-  const formatTime = (date: Date) => {
-    const d = new Date(date);
-    const hours = d.getHours().toString().padStart(2, '0');
-    const minutes = d.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
+  const parseTs = (date: Date | string) => {
+    if (typeof date === 'string') {
+      return new Date(date.endsWith('Z') ? date : date + 'Z');
+    }
+    return date;
   };
 
-  // Format date
-  const formatDate = (date: Date) => {
-    const d = new Date(date);
+  const formatTime = (date: Date | string) => {
+    const d = parseTs(date);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDate = (date: Date | string) => {
+    const d = parseTs(date);
     const today = new Date();
-    if (d.toDateString() === today.toDateString()) {
-      return 'Today';
-    }
+    if (d.toDateString() === today.toDateString()) return 'Today';
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
-    if (d.toDateString() === yesterday.toDateString()) {
-      return 'Yesterday';
-    }
+    if (d.toDateString() === yesterday.toDateString()) return 'Yesterday';
     return d.toLocaleDateString();
   };
 
   return (
     <div className="chat-container">
+      {newMessageToast && (
+        <div style={{
+          position: 'fixed', top: '72px', right: '1rem', zIndex: 999,
+          background: 'linear-gradient(135deg, #6366f1, #3b82f6)',
+          color: 'white', padding: '0.65rem 1.1rem', borderRadius: '10px',
+          fontSize: '0.82rem', fontWeight: 600, maxWidth: '320px',
+          boxShadow: '0 8px 24px rgba(99,102,241,0.4)',
+          animation: 'fadeIn 0.2s ease'
+        }}>
+          {newMessageToast}
+        </div>
+      )}
       <div className="chat-layout">
         {/* Conversations List */}
         <div className="conversations-sidebar">
@@ -394,7 +406,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
                   ) : null}
                   {conv.lastMessageTime && (
                     <div className="conversation-time">
-                      {formatTime(new Date(conv.lastMessageTime))}
+                      {formatTime(conv.lastMessageTime)}
                     </div>
                   )}
                 </div>
@@ -416,8 +428,8 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
                   <div>
                     <h3>{selectedConversation.name}</h3>
                     <p className="chat-header-role">
-                      {selectedConversation.role} •{' '}
-                      {selectedConversation.skills.length} skills
+                      {selectedConversation.role}
+                      {selectedConversation.skills.length > 0 && ` • ${selectedConversation.skills.length} skills`}
                     </p>
                   </div>
                 </div>
@@ -479,7 +491,7 @@ const Chat: React.FC<ChatProps> = ({ currentUser, socket }) => {
                     type="text"
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyPress={(e) => {
+                    onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
                         handleSendMessage();
