@@ -146,21 +146,6 @@ const sortedNotifications = useMemo(
       socket.off("notification_created", handleNotificationCreated);
     };
   }, [socket, userId]);
-   const runInactivityCheck = async () => {
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/notifications/run-inactivity-check`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    const data = await res.json();
-    console.log("Inactivity check result:", data);
-  } catch (error) {
-    console.error("Failed to run inactivity check:", error);
-  }
-};
 
   return (
     <div className="notifications-shell">
