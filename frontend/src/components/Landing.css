@@ -2,7 +2,7 @@
 * { box-sizing: border-box; }
 
 .landing {
-  background: #060d1a;
+  background: #04091a;
   color: #e2e8f0;
   font-family: 'Inter', -apple-system, sans-serif;
   overflow-x: hidden;
@@ -18,9 +18,10 @@
 }
 
 .landing-nav.scrolled {
-  background: rgba(6, 13, 26, 0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(4, 9, 26, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.15);
 }
 
 .landing-nav-inner {
@@ -41,7 +42,7 @@
 
 .landing-logo-text {
   font-weight: 700;
-  background: linear-gradient(135deg, #3b82f6, #60a5fa);
+  background: linear-gradient(135deg, #818cf8, #22d3ee);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -66,7 +67,7 @@
 
 /* ── Buttons ── */
 .l-btn-primary {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
   color: white;
   border: none;
   border-radius: 8px;
@@ -75,9 +76,14 @@
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
-.l-btn-primary:hover { background: #2563eb; transform: translateY(-1px); }
+.l-btn-primary:hover {
+  background: linear-gradient(135deg, #4f46e5, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+}
 
 .l-btn-ghost {
   background: transparent;
@@ -123,15 +129,15 @@
   padding: 7rem 2rem 4rem;
   max-width: 1200px;
   margin: 0 auto;
-  gap: 4rem;
+  gap: 6rem;
 }
 
 .l-hero-glow {
   position: fixed;
   top: -200px; left: 50%;
   transform: translateX(-50%);
-  width: 800px; height: 600px;
-  background: radial-gradient(ellipse, rgba(59,130,246,0.12) 0%, transparent 70%);
+  width: 900px; height: 700px;
+  background: radial-gradient(ellipse, rgba(99,102,241,0.18) 0%, rgba(6,182,212,0.06) 45%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -147,14 +153,15 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(59,130,246,0.1);
-  border: 1px solid rgba(59,130,246,0.2);
-  color: #60a5fa;
+  background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(6,182,212,0.08));
+  border: 1px solid rgba(99,102,241,0.25);
+  color: #a5b4fc;
   padding: 0.35rem 0.875rem;
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 600;
   margin-bottom: 1.5rem;
+  box-shadow: 0 0 14px rgba(99,102,241,0.12);
 }
 
 .l-hero-headline {
@@ -167,14 +174,14 @@
 }
 
 .l-hero-gradient {
-  background: linear-gradient(135deg, #3b82f6, #a78bfa);
+  background: linear-gradient(135deg, #818cf8, #06b6d4);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .l-hero-sub {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 1.05rem;
   line-height: 1.7;
   margin: 0 0 2rem;
@@ -198,12 +205,12 @@
   display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: #60a5fa;
 }
 
 .l-hero-stat span {
   font-size: 0.78rem;
-  color: #475569;
+  color: #94a3b8;
 }
 
 /* Floating cards */
@@ -246,7 +253,7 @@
 .l-section {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 5rem 2rem;
+  padding: 6rem 2rem;
 }
 
 .l-section-label {
@@ -269,7 +276,7 @@
 
 .l-section-sub {
   text-align: center;
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.95rem;
   max-width: 520px;
   margin: 0 auto 3rem;
@@ -284,17 +291,17 @@
 }
 
 .l-feature-card {
-  background: #1e293b;
-  border: 1px solid #2d3f55;
+  background: linear-gradient(145deg, #080f24, #0d1a35);
+  border: 1px solid #1a2d4a;
   border-radius: 12px;
-  padding: 1.5rem;
-  transition: all 0.2s ease;
+  padding: 1.25rem;
+  transition: all 0.25s ease;
 }
 
 .l-feature-card:hover {
-  border-color: #3b82f6;
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(59,130,246,0.12);
+  border-color: #6366f1;
+  transform: translateY(-4px);
+  box-shadow: 0 0 20px rgba(99,102,241,0.2), 0 8px 24px rgba(0,0,0,0.4);
 }
 
 .l-feature-icon { font-size: 1.75rem; margin-bottom: 0.875rem; }
@@ -307,14 +314,19 @@
 }
 
 .l-feature-card p {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.82rem;
   line-height: 1.6;
   margin: 0;
 }
 
 /* Benefits */
-.l-benefits-section { padding: 5rem 2rem; background: rgba(15,23,42,0.5); }
+.l-benefits-section {
+  padding: 6rem 2rem;
+  background: #0a1628;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
 
 .l-benefits-grid {
   max-width: 1100px;
@@ -334,7 +346,7 @@
 }
 
 .l-benefits-col > p {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.875rem;
   line-height: 1.65;
   margin: 0 0 1.5rem;
@@ -375,7 +387,7 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: #94a3b8;
+  color: #cbd5e1;
   font-size: 0.875rem;
 }
 
@@ -406,16 +418,25 @@
 }
 
 .l-step-card {
-  background: #1e293b;
-  border: 1px solid #2d3f55;
+  background: linear-gradient(145deg, #080f24, #0d1a35);
+  border: 1px solid #1a2d4a;
   border-radius: 12px;
   padding: 1.5rem;
+  transition: all 0.25s ease;
+}
+
+.l-step-card:hover {
+  border-color: #6366f1;
+  box-shadow: 0 0 16px rgba(99,102,241,0.15);
 }
 
 .l-step-num {
   font-size: 2rem;
   font-weight: 800;
-  color: rgba(59,130,246,0.2);
+  background: linear-gradient(135deg, #6366f1, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 0.875rem;
   font-variant-numeric: tabular-nums;
 }
@@ -428,7 +449,7 @@
 }
 
 .l-step-card p {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.8rem;
   line-height: 1.6;
   margin: 0;
@@ -438,8 +459,8 @@
 .l-cta {
   text-align: center;
   padding: 5rem 2rem;
-  background: linear-gradient(180deg, transparent, rgba(59,130,246,0.05));
-  border-top: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, transparent, rgba(99,102,241,0.06));
+  border-top: 1px solid rgba(99,102,241,0.1);
 }
 
 .l-cta h2 {
@@ -450,7 +471,7 @@
 }
 
 .l-cta p {
-  color: #64748b;
+  color: #94a3b8;
   font-size: 0.95rem;
   max-width: 480px;
   margin: 0 auto 2rem;
@@ -495,15 +516,4 @@
   .l-steps-grid { grid-template-columns: 1fr; }
   .l-features-grid { grid-template-columns: 1fr; }
   .landing-nav-inner { padding: 0.875rem 1rem; }
-}
-.l-hero {
-  gap: 6rem; /* increase spacing */
-}
-
-.l-section {
-  padding: 6rem 2rem; /* more breathing room */
-}
-
-.l-feature-card {
-  padding: 1.25rem; /* slightly tighter */
 }

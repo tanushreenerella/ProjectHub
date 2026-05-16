@@ -2,15 +2,11 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from bson import ObjectId
-from extensions import users_collection, db
+from extensions import users_collection, projects_collection, db
 from datetime import datetime
 
 users_bp = Blueprint("users", __name__)
-from flask_jwt_extended import get_jwt_identity
 
-@jwt_required()
-def get_me():
-    print("JWT OK:", get_jwt_identity())
 @users_bp.route("/match", methods=["GET"])
 @jwt_required()
 def match_users():
@@ -22,27 +18,52 @@ def match_users():
 
     my_tags = set(current_user.get("tags", []))
 
-    matches = []
+    raw_users = list(users_collection.find(
+        {"_id": {"$ne": ObjectId(user_id)}, "name": {"$exists": True, "$ne": ""}},
+        sort=[("created_at", -1)]
+    ))
+    # Deduplicate by email — keep the most recently created account per email
+    seen_emails: set = set()
+    all_users = []
+    for u in raw_users:
+        email = u.get("email", "").strip().lower()
+        if email and email not in seen_emails:
+            seen_emails.add(email)
+            all_users.append(u)
 
-    for u in users_collection.find({"_id": {"$ne": ObjectId(user_id)}}):
+    # Count projects per user in one aggregation query
+    user_oids = [u["_id"] for u in all_users]
+    project_counts: dict = {}
+    if user_oids:
+        for doc in projects_collection.aggregate([
+            {"$match": {"team_members": {"$in": user_oids}, "archived": {"$ne": True}}},
+            {"$unwind": "$team_members"},
+            {"$match": {"team_members": {"$in": user_oids}}},
+            {"$group": {"_id": "$team_members", "count": {"$sum": 1}}}
+        ]):
+            project_counts[str(doc["_id"])] = doc["count"]
+
+    matches = []
+    for u in all_users:
         score = len(my_tags.intersection(set(u.get("tags", []))))
+        uid = str(u["_id"])
         matches.append({
-            "id": str(u["_id"]),
-            "user_id": str(u["_id"]),
-            "name": u.get("name", "Unknown User"),
+            "id": uid,
+            "user_id": uid,
+            "name": u.get("name", ""),
             "email": u.get("email", ""),
             "role": u.get("role", "student"),
             "skills": u.get("skills", []),
             "interests": u.get("interests", []),
             "bio": u.get("bio", ""),
-            "projects": u.get("projects", []),
-            "connections": u.get("connections", []),
+            "project_count": project_counts.get(uid, 0),
+            "connection_count": len(u.get("connections", [])),
             "score": score
         })
 
     matches.sort(key=lambda x: x["score"], reverse=True)
 
-    return jsonify({"matches": matches[:10]})
+    return jsonify({"matches": matches[:20]})
 
 @users_bp.route("/update-bio", methods=["POST"])
 @jwt_required()

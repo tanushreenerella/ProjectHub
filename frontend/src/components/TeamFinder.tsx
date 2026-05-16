@@ -133,20 +133,28 @@ const [loading,setLoading] = useState(true);
           }
         });
 
+        if (res.status === 401 || res.status === 404) {
+          localStorage.removeItem("csh_token");
+          window.location.assign("#/signin");
+          return;
+        }
+
         const data = await res.json();
 
         // convert backend response to UI format
-        const formatted = data.matches.map((u: any) => ({
+        const formatted = (data.matches || []).map((u: any) => ({
           id: u.user_id || u.id,
-          name: u.name || "Unknown User",
+          name: u.name || "",
           role: u.role || "student",
           skills: u.skills || [],
           interests: u.interests || [],
-          projects: u.projects || [],
-          connections: u.connections || [],
+          projects: [],
+          connections: [],
+          project_count: u.project_count ?? 0,
+          connection_count: u.connection_count ?? 0,
           bio: u.bio || "",
           email: u.email || ""
-        }));
+        })).filter((u: any) => u.name);
 
         setUsers(formatted);
         setLoading(false);
@@ -309,11 +317,11 @@ const [loading,setLoading] = useState(true);
 
                 <div className="user-stats">
                   <div className="stat">
-                    <strong>{user.projects?.length || 0}</strong>
+                    <strong>{(user as any).project_count ?? user.projects?.length ?? 0}</strong>
                     <span>Projects</span>
                   </div>
                   <div className="stat">
-                    <strong>{user.connections?.length || 0}</strong>
+                    <strong>{(user as any).connection_count ?? user.connections?.length ?? 0}</strong>
                     <span>Connections</span>
                   </div>
                 </div>

@@ -4,6 +4,7 @@ Flask-JWT-Extended
 Flask-SocketIO
 gunicorn
 pymongo
+dnspython
 python-dotenv
 APScheduler
 google-genai

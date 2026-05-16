@@ -181,10 +181,6 @@ const sortedNotifications = useMemo(
             <button className="notifications-link-btn" onClick={markAllRead}>
               Mark all read
             </button>
-            <button className="notifications-link-btn" onClick={runInactivityCheck}>
-  Run inactivity check
-</button>
-
           </div>
           <div className="notifications-filters">
   {[

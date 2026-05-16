@@ -74,7 +74,7 @@ export default function Landing({ onGetStarted, onLogin }: LandingProps) {
             <button className="l-btn-primary l-btn-lg" onClick={onGetStarted}>Start Building for Free</button>
             <button className="l-btn-ghost l-btn-lg" onClick={onLogin}>I already have an account →</button>
           </div>
-          
+
         </div>
 
         {/* Floating cards */}
@@ -90,6 +90,10 @@ export default function Landing({ onGetStarted, onLogin }: LandingProps) {
           <div className="l-float-card l-fc-3">
             <span>🎓</span>
             <div><strong>Mentor Feedback</strong><p>4★ — Impressive MVP</p></div>
+          </div>
+          <div className="l-float-card l-fc-4">
+            <span>💰</span>
+            <div><strong>Funding Match</strong><p>3 grants available</p></div>
           </div>
         </div>
       </section>

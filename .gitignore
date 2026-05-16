@@ -1,14 +1,31 @@
-# frontend
-frontend/node_modules
-frontend/dist
-
-# backend
-backend/.venv
-backend/__pycache__
-
-# env files
-.env
-backend/.env
-frontend/.env
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
 .venv/
+venv/
+*.egg-info/
+
+# Environment files (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Frontend build output
+frontend/dist/
+frontend/dist-ssr/
+frontend/node_modules/
+
+# FAISS indexes (large binary files)
+backend/rag/indexes/
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
 *.zip

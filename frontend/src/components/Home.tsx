@@ -12,8 +12,7 @@ import Profile from './Profile';
 import Projects from './Projects.tsx';
 import Notifications from "./Notifications";
 import Mentorship from './Mentorship';
-import Matchmaking from './Matchmaking.tsx';
-
+import Matchmaking from './Matchmaking';
 interface HomeProps {
   user: User;
   onLogout: () => void;
@@ -392,6 +391,12 @@ useEffect(() => {
                 </button>
                 <button
                   className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('chat')}
+                >
+                  🔥 Match
+                </button>
+                <button
+                  className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
                   onClick={() => { setActiveTab('chat'); setChatBadge(0); }}
                   style={{ position: 'relative' }}
                 >
@@ -700,7 +705,7 @@ useEffect(() => {
 )}
 
 {activeTab === 'matchmaking' && (
-  <Matchmaking userId={user.id} userRole={user.role} />
+  <Matchmaking userId={user.id} />
 )}
 
       </main>

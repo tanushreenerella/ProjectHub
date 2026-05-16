@@ -39,6 +39,7 @@ export default function Projects() {
   useEffect(() => {
     if (!token) return;
 
+<<<<<<< HEAD
     fetch(`{import.meta.env.VITE_API_URL}/api/projects/my`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -47,11 +48,216 @@ export default function Projects() {
       .then(res => res.json())
       .then(data => {
         setProjects(data.projects || []);
+=======
+    return () => {
+      socket.disconnect();
+    };
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) {
+      setLoading(false);
+      setProjectError("No auth token found. Please sign in again.");
+      return;
+    }
+
+    let timedOut = false;
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, 8000);
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/projects/my`, {
+      headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const errorBody = await res.text().catch(() => "");
+          throw new Error(errorBody || `Failed to load projects (${res.status})`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        const transformedProjects: Project[] = (data.projects || []).map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          description: p.description,
+          category: p.category || "",
+          skillsNeeded: p.skillsNeeded || [],
+          creatorId: p.owner_id,
+          createdAt: new Date(p.created_at || Date.now()),
+          team_members: p.team_members,
+          owner_id: p.owner_id
+        }));
+        setProjects(transformedProjects);
+        transformedProjects.forEach((project: any, index: number) => {
+          const source = (data.projects || [])[index] || {};
+          saveProjectSettings(project.id, {
+            status: source.workspace_status || "active",
+            priority: source.workspace_priority || "medium",
+            startDate: source.start_date ? String(source.start_date).slice(0, 10) : "",
+            endDate: source.end_date ? String(source.end_date).slice(0, 10) : "",
+            notes: source.notes || ""
+          });
+        });
+        setProjectError("");
+      })
+      .catch((error: Error) => {
+        if (error.name === "AbortError") {
+          if (timedOut) {
+            setProjectError("Project request timed out. Make sure your backend is running on http://localhost:10000.");
+          }
+          // Cleanup abort (component unmount) — silently ignore
+          return;
+        }
+        console.error("Projects fetch failed:", error);
+        setProjectError(error.message || "Failed to load projects.");
+      })
+      .finally(() => {
+        window.clearTimeout(timeoutId);
+>>>>>>> f532cff (Backup working local frontend backend setup)
         setLoading(false);
       });
   }, []);
 
+<<<<<<< HEAD
   const createProject = async (e: any) => {
+=======
+    fetch(`${import.meta.env.VITE_API_URL}/api/projects/invites/me`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((res) => (res.ok ? res.json() : { invites: [] }))
+      .then((data) => {
+        setMyInvites(
+          (data.invites || []).map((invite: any) => ({
+            id: invite.id,
+            projectId: invite.project_id,
+            projectTitle: invite.project_title,
+            projectDescription: invite.project_description,
+            email: invite.email,
+            role: invite.role,
+            invitedAt: invite.invited_at
+          }))
+        );
+      })
+      .catch((err) => {
+        if ((err as Error).name !== "AbortError") {
+          console.error("Failed to load project invites:", err);
+        }
+      });
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [token]);
+   useEffect(() => {
+  if (!projects.length) return;
+
+  const pendingProjectId = localStorage.getItem("projecthub_open_project_id");
+  if (!pendingProjectId) return;
+
+  const targetProject = projects.find((project) => project.id === pendingProjectId);
+  if (!targetProject) return;
+
+  localStorage.removeItem("projecthub_open_project_id");
+  void openWorkspace(targetProject);
+}, [projects]);
+
+  const completed = tasks.filter((task) => task.status === "done").length;
+  const inProgress = tasks.filter((task) => task.status === "in_progress").length;
+  const todo = tasks.filter((task) => task.status === "todo").length;
+  const progress = tasks.length ? Math.round((completed / tasks.length) * 100) : 0;
+  const overdueCount = tasks.filter((task) => {
+    if (!task.dueDate || task.status === "done") return false;
+    return new Date(task.dueDate) < new Date();
+  }).length;
+
+  const filteredWorkspaceTasks = useMemo(() => {
+    return tasks.filter((task) => {
+      const query = workspaceSearch.trim().toLowerCase();
+      const matchesSearch =
+        !query ||
+        task.title.toLowerCase().includes(query) ||
+        task.description.toLowerCase().includes(query) ||
+        task.assigneeName.toLowerCase().includes(query);
+
+      const matchesStatus = taskFilterStatus === "all" || task.status === taskFilterStatus;
+      const matchesType = taskFilterType === "all" || task.type === taskFilterType;
+      const matchesPriority = taskFilterPriority === "all" || task.priority === taskFilterPriority;
+
+      return matchesSearch && matchesStatus && matchesType && matchesPriority;
+    });
+  }, [taskFilterPriority, taskFilterStatus, taskFilterType, tasks, workspaceSearch]);
+
+  const upcomingTasks = useMemo(() => {
+    return [...tasks]
+      .filter((task) => task.dueDate)
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
+      .slice(0, 5);
+  }, [tasks]);
+
+  const taskTypeCounts = useMemo(() => {
+    return {
+      task: tasks.filter((task) => task.type === "task").length,
+      feature: tasks.filter((task) => task.type === "feature").length,
+      improvement: tasks.filter((task) => task.type === "improvement").length
+    };
+  }, [tasks]);
+
+  const calendar = useMemo(() => buildCalendarDays(tasks, calendarViewDate), [calendarViewDate, tasks]);
+
+  const selectedCalendarTasks = useMemo(() => {
+    return tasks
+      .filter((task) => task.dueDate === selectedCalendarDate)
+      .sort((a, b) => a.title.localeCompare(b.title));
+  }, [selectedCalendarDate, tasks]);
+
+  const visibleProjects = useMemo(() => {
+    const query = projectSearch.trim().toLowerCase();
+    return projects.filter((project) => {
+      if (!query) return true;
+      return (
+        project.title.toLowerCase().includes(query) ||
+        project.description.toLowerCase().includes(query) ||
+        project.category.toLowerCase().includes(query)
+      );
+    });
+  }, [projectSearch, projects]);
+
+  const activeProjects = projects.filter((project) => {
+    const settings = getProjectSettingsMap()[project.id];
+    return !settings || settings.status === "active";
+  }).length;
+
+  const hydrateTask = (task: Task, memberList: TeamMember[]): WorkspaceTask => {
+    const taskMeta = getTaskMetaMap()[task.id] || {};
+    const rawTask = task as Task & {
+      description?: string;
+      type?: string;
+      priority?: string;
+      assignee_id?: string;
+      assignee_name?: string;
+      due_date?: string;
+    };
+    const assigneeId = String(rawTask.assignee_id || taskMeta.assigneeId || task.created_by || memberList[0]?.id || "");
+    const assignee = memberList.find((member) => member.id === assigneeId);
+
+    return {
+      ...task,
+      description: String(rawTask.description || taskMeta.description || "Add execution notes, blockers, and next steps here."),
+      type: (rawTask.type as TaskType) || (taskMeta.type as TaskType) || inferTaskType(task.title),
+      priority: (rawTask.priority as TaskPriority) || (taskMeta.priority as TaskPriority) || inferPriority(task.title),
+      assigneeId,
+      assigneeName: String(rawTask.assignee_name || assignee?.name || taskMeta.assigneeName || "Unassigned"),
+      dueDate: String(rawTask.due_date || taskMeta.dueDate || "")
+    };
+  };
+
+  const createProject = async (e: React.FormEvent<HTMLFormElement>) => {
+>>>>>>> f532cff (Backup working local frontend backend setup)
     e.preventDefault();
 
     const res = await fetch(`{import.meta.env.VITE_API_URL}/api/projects/`, {

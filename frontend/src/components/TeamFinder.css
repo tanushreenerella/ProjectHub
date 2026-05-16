@@ -331,21 +331,28 @@
 .connect-btn {
   width: 100%;
   padding: 0.45rem;
-  background: transparent;
-  border: 1px solid #334155;
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  border: none;
   border-radius: 6px;
-  color: #64748b;
-  font-weight: 500;
+  color: white;
+  font-weight: 600;
   font-size: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: auto;
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.3);
 }
 
 .connect-btn:hover {
+<<<<<<< HEAD
   background: #3b82f6;
   color: white;
   transform: scale(1.02);
+=======
+  background: linear-gradient(135deg, #4f46e5, #2563eb);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(99, 102, 241, 0.45);
+>>>>>>> f532cff (Backup working local frontend backend setup)
 }
 
 /* Modal */

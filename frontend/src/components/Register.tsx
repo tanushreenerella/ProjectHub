@@ -140,7 +140,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
             <p>Start your entrepreneurial journey today</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="register-form">
+          <form onSubmit={handleSubmit} className="register-form" autoComplete="off">
           {/* Step 1: Basic Info */}
           {currentStep === 1 && (
             <div className="form-step active">
@@ -152,6 +152,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter your full name"
+                  autoComplete="off"
                   required
                 />
               </div>
@@ -164,6 +165,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Enter your email"
+                  autoComplete="new-password"
                   required
                 />
               </div>
@@ -176,6 +178,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister, onSwitchToLogin }) => {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="Create a password"
+                  autoComplete="new-password"
                   required
                 />
               </div>

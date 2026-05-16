@@ -26,12 +26,41 @@ const App: React.FC = () => {
     localStorage.removeItem('csh_token')
   }
 
+<<<<<<< HEAD
   // Navbar handlers (simple navigation)
   const onFeaturesClick = () => window.scrollTo({ top: 0, behavior: 'smooth' })
   const onStatsClick = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 const onGetStartedClick = () => window.location.assign('#/register')
 const onLoginClick = () => window.location.assign('#/signin')
 const onRegisterClick = () => window.location.assign('#/register')
+=======
+  useEffect(() => {
+    const token = localStorage.getItem('csh_token')
+    if (!token) return
+    const refreshUser = async () => {
+      try {
+        const resp = await axios.get(`${import.meta.env.VITE_API_URL}/api/users/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+        const profile = resp.data || {}
+        handleLogin({
+          id: profile.id || user?.id || Math.random().toString(36).slice(2, 9),
+          name: profile.name || user?.name || '',
+          email: profile.email || user?.email || '',
+          role: String(profile.role || user?.role || 'student').trim().toLowerCase()
+        })
+      } catch (err: any) {
+        const status = err?.response?.status
+        if (status === 401 || status === 404) {
+          handleLogout()
+        } else {
+          console.warn('Could not refresh user profile', err)
+        }
+      }
+    }
+    refreshUser()
+  }, [])
+>>>>>>> f532cff (Backup working local frontend backend setup)
 
  
 
