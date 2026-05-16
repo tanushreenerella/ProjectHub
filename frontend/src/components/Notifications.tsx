@@ -23,14 +23,15 @@ interface NotificationItem {
 }
 
 const formatNotificationTime = (value: string) => {
-  const date = new Date(value);
+  const date = new Date(value.endsWith("Z") ? value : value + "Z");
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleString(undefined, {
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  });
+  const now = Date.now();
+  const diff = Math.floor((now - date.getTime()) / 1000);
+  if (diff < 60) return "just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+  if (diff < 172800) return "yesterday";
+  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 };
 
 export default function Notifications({ userId, token, socket,onOpenNotification }: NotificationsProps) {
