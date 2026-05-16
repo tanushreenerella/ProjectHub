@@ -28,4 +28,7 @@ project_invites_collection = db.get_collection("project_invites")
 project_activity_collection = db.get_collection("project_activity")
 notifications_collection = db["notifications"]
 knowledge_chunks_collection = db.get_collection("knowledge_chunks")
+user_embeddings_collection = db["user_embeddings"]
+match_explanations_collection = db["match_explanations"]
+match_interests_collection = db["match_interests"]
 gemini_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
