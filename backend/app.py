@@ -10,8 +10,6 @@ from routes.conversation_routes import conversation_bp
 from routes.task_routes import tasks_bp
 from routes.user_routes import users_bp
 from flask import Flask, jsonify, request
-<<<<<<< HEAD
-=======
 from routes.funding_routes import funding_bp
 from routes.notification_routes import notifications_bp
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -19,7 +17,6 @@ from jobs.reminders import send_inactivity_reminders
 from routes.mentorship_routes import mentorship_bp
 from routes.matchmaking_routes import matchmaking_bp
 import atexit
->>>>>>> f532cff (Backup working local frontend backend setup)
 import os
 app = Flask(__name__)
 
@@ -31,15 +28,10 @@ CORS(
     supports_credentials=True,
     origins=[
         "http://localhost:5173",
-<<<<<<< HEAD
-        "https://tanushreenerella.github.io",
-        "https://shambhavi-singh05.github.io"
-=======
         "http://localhost:5174",
           "http://localhost:5175",
         "https://tanushreenerella.github.io",
         "https://shambhavi-singh05.github.io",
->>>>>>> f532cff (Backup working local frontend backend setup)
     ]
 )
 
@@ -60,15 +52,12 @@ app.register_blueprint(conversation_bp, url_prefix="/api")
 app.register_blueprint(users_bp, url_prefix="/api/users")
 from routes.funding_routes import funding_bp
 app.register_blueprint(funding_bp, url_prefix="/api/funding")
-<<<<<<< HEAD
-=======
 app.register_blueprint(notifications_bp, url_prefix="/api/notifications")
 app.register_blueprint(mentorship_bp, url_prefix="/api/mentorship")
 app.register_blueprint(matchmaking_bp, url_prefix="/api/match")
 @app.route("/")
 def home():
     return {"message": "ProjectHub backend is running 🚀"}
->>>>>>> f532cff (Backup working local frontend backend setup)
 @app.route("/api/agents/startup", methods=["POST"])
 def run_agents():
     data = request.json
