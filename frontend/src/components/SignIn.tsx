@@ -96,11 +96,12 @@ const SignIn: React.FC<SignInProps> = ({ onSignIn, onGoogleSignIn, onSwitchToReg
             <p>Enter your credentials to continue</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="auth-form">
+          <form onSubmit={handleSubmit} className="auth-form" autoComplete="off">
             <div className="auth-field">
               <label>Email</label>
               <input type="email" name="email" value={formData.email}
-                onChange={handleChange} placeholder="you@example.com" required />
+                onChange={handleChange} placeholder="you@example.com"
+                autoComplete="new-password" required />
             </div>
 
             <div className="auth-field">
@@ -109,7 +110,8 @@ const SignIn: React.FC<SignInProps> = ({ onSignIn, onGoogleSignIn, onSwitchToReg
                 <button type="button" className="auth-forgot">Forgot password?</button>
               </label>
               <input type="password" name="password" value={formData.password}
-                onChange={handleChange} placeholder="Enter your password" required />
+                onChange={handleChange} placeholder="Enter your password"
+                autoComplete="new-password" required />
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={loading}>
