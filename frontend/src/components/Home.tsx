@@ -544,7 +544,11 @@ useEffect(() => {
                 <div className="stat-icon">⚡</div>
                 <div className="stat-info">
                   <h3>{user.skills?.length || 0}</h3>
+<<<<<<< HEAD
                   <p>Skills Listed</p>
+=======
+                  <p>{isMentor ? 'Skills Listed' : 'Skills Listed'}</p>
+>>>>>>> ddf91ce (Fix hardcoded stat count in dashboard, show real skills count)
                 </div>
               </div>
             </div>

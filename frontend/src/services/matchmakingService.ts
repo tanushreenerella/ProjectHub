@@ -62,8 +62,4 @@ export const MatchmakingService = {
       headers: headers(),
     });
   },
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 174d326 (Rebuild matchmaking UI with AI match cards and Gemini explanation display)

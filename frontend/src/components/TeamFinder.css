@@ -344,15 +344,9 @@
 }
 
 .connect-btn:hover {
-<<<<<<< HEAD
-  background: #3b82f6;
-  color: white;
-  transform: scale(1.02);
-=======
   background: linear-gradient(135deg, #4f46e5, #2563eb);
   transform: translateY(-1px);
   box-shadow: 0 5px 16px rgba(99, 102, 241, 0.45);
->>>>>>> f532cff (Backup working local frontend backend setup)
 }
 
 /* Modal */
