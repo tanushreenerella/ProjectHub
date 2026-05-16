@@ -18,7 +18,8 @@ projectHub helps college students build, launch, and grow startup ideas by conne
 - **Team Finder** — Search and connect with students by skills and interests. Send/accept/decline connection requests.
 - **Mentorship** — Students request mentorship from experienced mentors. Mentors review student projects and leave feedback.
 - **Projects** — Create and manage startup projects with task tracking and team collaboration.
-- **AI Assistant** — Get instant AI feedback on startup ideas and proposals.
+- **AI Assistant** — Get instant AI feedback on startup ideas and proposals using Groq LLaMA.
+- **RAG Project Copilot** — Ask questions about your project and get context-aware answers. Uses FAISS vector search over your actual tasks, team members, and activity logs.
 - **Funding Portal** — Explore grants and funding opportunities. Track applications.
 - **Real-time Chat** — Message your connections directly with live notifications.
 - **Notifications** — Real-time alerts for connection requests, matches, mentorship updates, and project activity.
@@ -32,7 +33,8 @@ projectHub helps college students build, launch, and grow startup ideas by conne
 | Frontend | React 19, TypeScript, Vite |
 | Backend | Flask, Flask-SocketIO, Flask-JWT-Extended |
 | Database | MongoDB Atlas |
-| AI | Google Gemini 2.5 Flash (text), Gemini Embedding 001 (embeddings) |
+| AI (Matchmaking) | Google Gemini 2.5 Flash (explanations), Gemini Embedding 001 (semantic vectors) |
+| AI (Project Copilot) | Groq LLaMA 3.1 (text), FAISS (vector search), RAG pipeline |
 | Auth | JWT tokens + Google OAuth |
 | Deployment | GitHub Pages (frontend), Render (backend) |
 
@@ -108,8 +110,10 @@ npm run deploy
 ProjectHub/
 ├── backend/
 │   ├── routes/          # API route handlers
-│   ├── services/        # Gemini AI embedding and matching logic
+│   ├── services/        # Gemini AI embedding and matchmaking logic
+│   ├── rag/             # FAISS vector store and RAG pipeline for project copilot
 │   ├── agents/          # AI orchestration agents
+│   ├── utils/           # Shared utilities (embeddings, notifications)
 │   ├── sockets/         # Socket.IO real-time handlers
 │   └── app.py           # Flask application entry point
 └── frontend/
