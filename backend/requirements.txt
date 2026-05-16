@@ -3,7 +3,6 @@ flask-cors
 Flask-JWT-Extended
 Flask-SocketIO
 gunicorn
-eventlet
 pymongo
 dnspython
 python-dotenv
