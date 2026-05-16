@@ -14,6 +14,15 @@ interface ConnectionState {
   success: string | null;
 }
 
+interface PendingRequest {
+  id: string;
+  from_user_id: string;
+  to_user_id: string;
+  from_user_name: string;
+  from_user_role: string;
+  message?: string;
+}
+
 const TeamFinder: React.FC<TeamFinderProps> = ({ currentUser, onSendConnection }) => {
   const [filters, setFilters] = useState<TeamSearchFilters>({
     skills: [],
@@ -22,6 +31,8 @@ const TeamFinder: React.FC<TeamFinderProps> = ({ currentUser, onSendConnection }
     availability: 'flexible'
   });
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<PendingRequest[]>([]);
+  const [requestActionLoading, setRequestActionLoading] = useState<string | null>(null);
 const [loading,setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
@@ -167,12 +178,85 @@ const [loading,setLoading] = useState(true);
     fetchMatches();
   }, []);
 
+  useEffect(() => {
+    const fetchPendingRequests = async () => {
+      try {
+        const token = localStorage.getItem("csh_token");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        const incoming = (data.requests || []).filter(
+          (r: any) => r.to_user_id === currentUser.id
+        );
+        setPendingRequests(incoming);
+      } catch (err) {
+        console.error("Failed to fetch pending requests:", err);
+      }
+    };
+    fetchPendingRequests();
+  }, []);
+
+  const handleRequestAction = async (requestId: string, action: 'accept' | 'reject') => {
+    setRequestActionLoading(requestId);
+    try {
+      const token = localStorage.getItem("csh_token");
+      await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests/${requestId}/${action}`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPendingRequests(prev => prev.filter(r => r.id !== requestId));
+    } catch (err) {
+      console.error(`Failed to ${action} request:`, err);
+    } finally {
+      setRequestActionLoading(null);
+    }
+  };
+
   return (
     <div className="team-finder">
       <div className="team-finder-header">
         <h1>Find Your Dream Team</h1>
         <p>Connect with talented students and mentors to build your startup</p>
       </div>
+
+      {pendingRequests.length > 0 && (
+        <div className="pending-requests-section">
+          <h3 className="pending-requests-title">
+            🔔 Connection Requests <span className="pending-count">{pendingRequests.length}</span>
+          </h3>
+          <div className="pending-requests-list">
+            {pendingRequests.map(req => (
+              <div key={req.id} className="pending-request-card">
+                <div className="pending-request-avatar">
+                  {req.from_user_name?.[0]?.toUpperCase() || '?'}
+                </div>
+                <div className="pending-request-info">
+                  <span className="pending-request-name">{req.from_user_name}</span>
+                  <span className="pending-request-role">{req.from_user_role || 'Student'}</span>
+                  {req.message && <p className="pending-request-message">"{req.message}"</p>}
+                </div>
+                <div className="pending-request-actions">
+                  <button
+                    className="pending-accept-btn"
+                    onClick={() => handleRequestAction(req.id, 'accept')}
+                    disabled={requestActionLoading === req.id}
+                  >
+                    {requestActionLoading === req.id ? '...' : '✓ Accept'}
+                  </button>
+                  <button
+                    className="pending-decline-btn"
+                    onClick={() => handleRequestAction(req.id, 'reject')}
+                    disabled={requestActionLoading === req.id}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="team-finder-content">
         {/* Search and Filters Sidebar */}
