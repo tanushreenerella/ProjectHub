@@ -4,13 +4,20 @@ import './Matchmaking.css';
 
 interface MatchmakingProps {
   userId: string;
+  userRole?: string;
 }
 
-const TAB_CONFIG: { type: FeedType; label: string; icon: string; targetType: 'user' | 'mentor' | 'project' | null }[] = [
+const STUDENT_TABS: { type: FeedType; label: string; icon: string; targetType: 'user' | 'mentor' | 'project' | null }[] = [
   { type: 'teammates', label: 'Teammates',   icon: '👥', targetType: 'user'    },
   { type: 'mentors',   label: 'Mentors',     icon: '🎓', targetType: 'mentor'  },
   { type: 'projects',  label: 'Projects',    icon: '🚀', targetType: 'project' },
   { type: 'mutual',    label: 'My Matches',  icon: '❤️', targetType: null      },
+];
+
+const MENTOR_TABS: { type: FeedType; label: string; icon: string; targetType: 'user' | 'mentor' | 'project' | null }[] = [
+  { type: 'teammates', label: 'Find Students', icon: '👤', targetType: 'user'    },
+  { type: 'projects',  label: 'Projects',      icon: '🚀', targetType: 'project' },
+  { type: 'mutual',    label: 'My Matches',    icon: '❤️', targetType: null      },
 ];
 
 const scoreLabel = (s: number) => s >= 75 ? 'Excellent' : s >= 55 ? 'Strong' : s >= 35 ? 'Good' : 'Possible';
@@ -26,7 +33,9 @@ const AvatarCircle = ({ name, variant }: { name: string; variant: 'teammate' | '
   </div>
 );
 
-export default function Matchmaking({ userId: _userId }: MatchmakingProps) {
+export default function Matchmaking({ userId: _userId, userRole }: MatchmakingProps) {
+  const isMentor = userRole === 'mentor';
+  const TAB_CONFIG = isMentor ? MENTOR_TABS : STUDENT_TABS;
   const [tab, setTab] = useState<FeedType>('teammates');
   const [feed, setFeed] = useState<FeedItem[]>([]);
   const [mutual, setMutual] = useState<FeedItem[]>([]);
@@ -100,7 +109,9 @@ export default function Matchmaking({ userId: _userId }: MatchmakingProps) {
       <div className="mm-header">
         <h2 className="mm-title">AI Match</h2>
         <p className="mm-subtitle">
-          Gemini AI finds your best collaborators using semantic profile analysis
+          {isMentor
+            ? 'Gemini AI finds students who match your expertise and mentoring style'
+            : 'Gemini AI finds your best collaborators using semantic profile analysis'}
         </p>
       </div>
 

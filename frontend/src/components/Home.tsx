@@ -544,7 +544,7 @@ useEffect(() => {
                 <div className="stat-icon">⚡</div>
                 <div className="stat-info">
                   <h3>{user.skills?.length || 0}</h3>
-                  <p>{isMentor ? 'Skills Listed' : 'Skills Listed'}</p>
+                  <p>Skills Listed</p>
                 </div>
               </div>
             </div>
@@ -705,7 +705,7 @@ useEffect(() => {
 )}
 
 {activeTab === 'matchmaking' && (
-  <Matchmaking userId={user.id} />
+  <Matchmaking userId={user.id} userRole={user.role} />
 )}
 
       </main>

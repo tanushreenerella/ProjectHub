@@ -234,7 +234,14 @@ export default function Mentorship({ userRole }: Props) {
 
   const formatDate = (iso: string) => {
     if (!iso) return "";
-    return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    const date = new Date(iso.endsWith("Z") ? iso : iso + "Z");
+    const now = Date.now();
+    const diff = Math.floor((now - date.getTime()) / 1000);
+    if (diff < 60) return "just now";
+    if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+    if (diff < 172800) return "yesterday";
+    return date.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
   };
 
   const totalFeedbackGiven = myStudents.reduce((sum, student) => sum + (student.feedback_given?.length || 0), 0);

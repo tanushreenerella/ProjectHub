@@ -13,7 +13,13 @@ dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
 dns.resolver.default_resolver.nameservers = ['8.8.8.8', '8.8.4.4']
 
 jwt = JWTManager()
-socketio = SocketIO(cors_allowed_origins="*", async_mode="threading")
+socketio = SocketIO(
+    cors_allowed_origins="*",
+    async_mode="threading",
+    allow_upgrades=True,
+    ping_timeout=60,
+    ping_interval=25,
+)
 
 mongo_client = pymongo.MongoClient(MONGO_URI)
 db = mongo_client["projecthub"]
