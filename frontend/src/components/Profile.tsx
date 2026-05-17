@@ -114,21 +114,30 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     const token = localStorage.getItem("csh_token");
     setProfileSaving(true);
     try {
-      await fetch(`${import.meta.env.VITE_API_URL}/api/users/update-me`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/update-me`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ skills: editSkills, interests: editInterests, lookingFor: editLookingFor, bio: profile.bio })
+        body: JSON.stringify({
+          skills: editSkills,
+          interests: editInterests,
+          lookingFor: editLookingFor,
+          bio: profile.bio
+        })
       });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Server error ${res.status}`);
+      }
       setProfile((p: any) => ({ ...p, skills: editSkills, interests: editInterests, lookingFor: editLookingFor }));
-      // refresh Gemini embedding with new profile
-      await fetch(`${import.meta.env.VITE_API_URL}/api/match/embed/refresh`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` }
-      });
       setSaveMsg("Profile saved!");
       setTimeout(() => { setEditingProfile(false); setSaveMsg(""); }, 1200);
-    } catch {
-      setSaveMsg("Failed to save. Try again.");
+      // Refresh Gemini embedding in background — don't block save on this
+      fetch(`${import.meta.env.VITE_API_URL}/api/match/embed/refresh`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      }).catch(() => {});
+    } catch (err: any) {
+      setSaveMsg(`Failed to save: ${err.message || "Try again."}`);
     }
     setProfileSaving(false);
   };

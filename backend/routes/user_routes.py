@@ -100,15 +100,20 @@ def update_me():
     user_id = get_jwt_identity()
     data = request.get_json()
 
+    update_fields = {
+        "skills": data.get("skills", []),
+        "interests": data.get("interests", []),
+        "tags": data.get("skills", []) + data.get("interests", []),
+        "lookingFor": data.get("lookingFor", []),
+    }
+    if data.get("name"):
+        update_fields["name"] = data["name"]
+    if data.get("bio") is not None:
+        update_fields["bio"] = data["bio"]
+
     users_collection.update_one(
         {"_id": ObjectId(user_id)},
-        {"$set": {
-            "name": data.get("name"),
-            "bio": data.get("bio"),
-            "skills": data.get("skills", []),
-            "interests": data.get("interests", []),
-            "tags": data.get("skills", []) + data.get("interests", [])
-        }}
+        {"$set": update_fields}
     )
 
     return jsonify({"msg": "Profile updated"})
