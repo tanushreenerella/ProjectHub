@@ -17,6 +17,7 @@ const SignIn: React.FC<SignInProps> = ({ onSignIn, onGoogleSignIn, onSwitchToReg
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [googleReady, setGoogleReady] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(true);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -97,15 +98,19 @@ const SignIn: React.FC<SignInProps> = ({ onSignIn, onGoogleSignIn, onSwitchToReg
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form" autoComplete="off">
-            {/* Dummy inputs trick Chrome password manager into not autofilling real fields */}
-            <input type="text" style={{ display: 'none' }} aria-hidden="true" />
-            <input type="password" style={{ display: 'none' }} aria-hidden="true" />
-
             <div className="auth-field">
               <label>Email</label>
-              <input type="text" name="email" value={formData.email}
-                onChange={handleChange} placeholder="you@example.com"
-                autoComplete="off" required />
+              <input
+                type="text"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                autoComplete="off"
+                readOnly={isReadOnly}
+                onFocus={() => setIsReadOnly(false)}
+                required
+              />
             </div>
 
             <div className="auth-field">
@@ -113,9 +118,17 @@ const SignIn: React.FC<SignInProps> = ({ onSignIn, onGoogleSignIn, onSwitchToReg
                 <span>Password</span>
                 <button type="button" className="auth-forgot">Forgot password?</button>
               </label>
-              <input type="password" name="password" value={formData.password}
-                onChange={handleChange} placeholder="Enter your password"
-                autoComplete="off" required />
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                autoComplete="new-password"
+                readOnly={isReadOnly}
+                onFocus={() => setIsReadOnly(false)}
+                required
+              />
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={loading}>
