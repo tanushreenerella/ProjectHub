@@ -114,30 +114,21 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
     const token = localStorage.getItem("csh_token");
     setProfileSaving(true);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/update-me`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/users/update-me`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          skills: editSkills,
-          interests: editInterests,
-          lookingFor: editLookingFor,
-          bio: profile.bio
-        })
+        body: JSON.stringify({ skills: editSkills, interests: editInterests, lookingFor: editLookingFor, bio: profile.bio })
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `Server error ${res.status}`);
-      }
       setProfile((p: any) => ({ ...p, skills: editSkills, interests: editInterests, lookingFor: editLookingFor }));
-      setSaveMsg("Profile saved!");
-      setTimeout(() => { setEditingProfile(false); setSaveMsg(""); }, 1200);
-      // Refresh Gemini embedding in background — don't block save on this
-      fetch(`${import.meta.env.VITE_API_URL}/api/match/embed/refresh`, {
+      // refresh Gemini embedding with new profile
+      await fetch(`${import.meta.env.VITE_API_URL}/api/match/embed/refresh`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
-      }).catch(() => {});
-    } catch (err: any) {
-      setSaveMsg(`Failed to save: ${err.message || "Try again."}`);
+      });
+      setSaveMsg("Profile saved!");
+      setTimeout(() => { setEditingProfile(false); setSaveMsg(""); }, 1200);
+    } catch {
+      setSaveMsg("Failed to save. Try again.");
     }
     setProfileSaving(false);
   };
@@ -164,7 +155,6 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
           </div>
           <p className="profile-email">{profile.email}</p>
 
-          {/* ✅ FIXED BIO SECTION */}
           {editingBio ? (
             <div className="profile-bio-edit">
               <textarea
@@ -177,13 +167,7 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
                 <button className="p-btn-primary" onClick={saveBio} disabled={saving}>
                   {saving ? "Saving..." : "Save"}
                 </button>
-                <button
-                  className="p-btn-ghost"
-                  onClick={() => {
-                    setEditingBio(false);
-                    setBio(profile.bio || "");
-                  }}
-                >
+                <button className="p-btn-ghost" onClick={() => { setEditingBio(false); setBio(profile.bio || ""); }}>
                   Cancel
                 </button>
               </div>
@@ -191,9 +175,10 @@ const Profile: React.FC<ProfileProps> = ({ user }) => {
           ) : (
             <div className="profile-bio-display">
               <p>{profile.bio || "No bio added yet."}</p>
-              <button className="p-btn-ghost" onClick={() => setEditingBio(true)}>
-                Edit Bio
-              </button>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
+                <button className="p-btn-ghost" onClick={() => setEditingBio(true)}>Edit Bio</button>
+                <button className="p-btn-primary" onClick={openEditProfile}>✏️ Edit Skills & Interests</button>
+              </div>
             </div>
           )}
         </div>
