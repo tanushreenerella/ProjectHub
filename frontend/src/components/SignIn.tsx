@@ -97,11 +97,15 @@ const SignIn: React.FC<SignInProps> = ({ onSignIn, onGoogleSignIn, onSwitchToReg
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form" autoComplete="off">
+            {/* Dummy inputs trick Chrome password manager into not autofilling real fields */}
+            <input type="text" style={{ display: 'none' }} aria-hidden="true" />
+            <input type="password" style={{ display: 'none' }} aria-hidden="true" />
+
             <div className="auth-field">
               <label>Email</label>
-              <input type="email" name="email" value={formData.email}
+              <input type="text" name="email" value={formData.email}
                 onChange={handleChange} placeholder="you@example.com"
-                autoComplete="new-password" required />
+                autoComplete="off" required />
             </div>
 
             <div className="auth-field">
@@ -111,7 +115,7 @@ const SignIn: React.FC<SignInProps> = ({ onSignIn, onGoogleSignIn, onSwitchToReg
               </label>
               <input type="password" name="password" value={formData.password}
                 onChange={handleChange} placeholder="Enter your password"
-                autoComplete="new-password" required />
+                autoComplete="off" required />
             </div>
 
             <button type="submit" className="auth-submit-btn" disabled={loading}>
