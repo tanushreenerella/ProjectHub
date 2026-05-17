@@ -391,12 +391,6 @@ useEffect(() => {
                 </button>
                 <button
                   className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('chat')}
-                >
-                  🔥 Match
-                </button>
-                <button
-                  className={`nav-item ${activeTab === 'chat' ? 'active' : ''}`}
                   onClick={() => { setActiveTab('chat'); setChatBadge(0); }}
                   style={{ position: 'relative' }}
                 >
