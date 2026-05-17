@@ -122,33 +122,16 @@ def express_interest():
 @jwt_required()
 def get_mutual_matches():
     user_id = get_jwt_identity()
-
-    my_likes = set(
-        doc["target_id"]
-        for doc in match_interests_collection.find({
-            "user_id": ObjectId(user_id),
-            "action": "like",
-            "target_type": {"$in": ["user", "mentor"]},
-        })
-    )
-
-    mutual_ids = []
-    for liked_id in my_likes:
-        try:
-            if match_interests_collection.find_one({
-                "user_id": ObjectId(liked_id),
-                "target_id": user_id,
-                "action": "like",
-            }):
-                mutual_ids.append(liked_id)
-        except Exception:
-            pass
-
+    seen_ids = set()
     matches = []
-    for uid in mutual_ids:
+
+    def add_match(uid):
+        if uid in seen_ids:
+            return
         try:
             u = users_collection.find_one({"_id": ObjectId(uid)})
             if u:
+                seen_ids.add(uid)
                 matches.append({
                     "id": str(u["_id"]),
                     "name": u.get("name", ""),
@@ -159,6 +142,32 @@ def get_mutual_matches():
                 })
         except Exception:
             pass
+
+    # Source 1: Match tab swipes (match_interests collection)
+    my_likes = set(
+        doc["target_id"]
+        for doc in match_interests_collection.find({
+            "user_id": ObjectId(user_id),
+            "action": "like",
+            "target_type": {"$in": ["user", "mentor"]},
+        })
+    )
+    for liked_id in my_likes:
+        try:
+            if match_interests_collection.find_one({
+                "user_id": ObjectId(liked_id),
+                "target_id": user_id,
+                "action": "like",
+            }):
+                add_match(liked_id)
+        except Exception:
+            pass
+
+    # Source 2: Accepted connection requests (Network tab)
+    current_user = users_collection.find_one({"_id": ObjectId(user_id)})
+    if current_user:
+        for conn_id in current_user.get("connections", []):
+            add_match(str(conn_id))
 
     return jsonify({"matches": matches})
 
