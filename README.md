@@ -2,7 +2,7 @@
 
 > AI-powered student startup collaboration platform
 
-**Live Demo:** https://shambhavi-singh05.github.io/ProjectHub/
+**Live Demo:** https://tanushreenerella.github.io/ProjectHub/
 
 ---
 
