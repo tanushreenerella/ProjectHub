@@ -12,3 +12,4 @@ bcrypt
 faiss-cpu
 numpy
 groq
+openai
