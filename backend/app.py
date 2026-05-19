@@ -44,6 +44,11 @@ import sockets.chat  # noqa: F401
 # Import socket handlers to register them with socketio
 import sockets.chat
 
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        return jsonify({}), 200
+
 app.register_blueprint(auth_bp, url_prefix="/api/auth")
 app.register_blueprint(ai_bp, url_prefix="/api/ai")
 app.register_blueprint(idea_bp, url_prefix="/api/ideas")

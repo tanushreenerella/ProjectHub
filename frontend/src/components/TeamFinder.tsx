@@ -91,7 +91,11 @@ const [loading,setLoading] = useState(true);
     
     try {
       const token = localStorage.getItem("csh_token");
-      const response = await fetch(`{import.meta.env.VITE_API_URL}/api/users/send-connection`, {
+      if (!token) {
+        throw new Error('Please sign in again before sending a connection request.');
+      }
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/send-connection`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,16 +142,27 @@ const [loading,setLoading] = useState(true);
       try {
         const token = localStorage.getItem("csh_token");
         console.log("TOKEN BEING SENT:", token);
-        const res = await fetch(`{import.meta.env.VITE_API_URL}/api/users/match`, {
+        if (!token) {
+          window.location.assign("#/signin");
+          return;
+        }
+
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/match`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
 
-        if (res.status === 401 || res.status === 404) {
+        if (res.status === 401 || res.status === 422) {
           localStorage.removeItem("csh_token");
+          localStorage.removeItem("csh_user");
           window.location.assign("#/signin");
           return;
+        }
+
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to load team matches');
         }
 
         const data = await res.json();
