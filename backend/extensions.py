@@ -2,7 +2,6 @@ from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
 import pymongo
 from config import MONGO_URI
-from openai import OpenAI
 import os
 from groq import Groq
 import dns.resolver
