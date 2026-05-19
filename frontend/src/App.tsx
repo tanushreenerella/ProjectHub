@@ -11,6 +11,11 @@ import Register from './components/Register'
 const App: React.FC = () => {
   const [user, setUser] = useState<any>(() => {
     try {
+      const token = localStorage.getItem('csh_token')
+      if (!token) {
+        localStorage.removeItem('csh_user')
+        return null
+      }
       const raw = localStorage.getItem('csh_user')
       return raw ? JSON.parse(raw) : null
     } catch { return null }
@@ -47,7 +52,7 @@ const App: React.FC = () => {
         })
       } catch (err: any) {
         const status = err?.response?.status
-        if (status === 401 || status === 404) {
+        if (status === 401 || status === 404 || status === 422) {
           handleLogout()
         } else {
           console.warn('Could not refresh user profile', err)

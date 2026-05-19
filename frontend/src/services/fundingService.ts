@@ -13,6 +13,11 @@ function authHeader(): HeadersInit {
   return headers;
 }
 
+async function readError(res: Response, fallback: string): Promise<string> {
+  const data = await res.json().catch(() => null);
+  return data?.error || data?.msg || fallback;
+}
+
 export interface FundingInsightsResponse {
   projectId: string;
   projectTitle: string;
@@ -110,7 +115,7 @@ export class FundingService {
         ...authHeader()
       }
     });
-    if (!res.ok) throw new Error('Failed to load applications');
+    if (!res.ok) throw new Error(await readError(res, 'Failed to load applications'));
     const data = await res.json();
     return data.map((d: any) => ({
       id: d.id || d._id,
