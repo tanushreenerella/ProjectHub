@@ -1,6 +1,7 @@
 // src/components/TeamFinder.tsx
 import { useState, useEffect } from 'react';
 import type { User, UserProfile, TeamSearchFilters } from '../types';
+import { apiUrl, getAuthToken } from '../config/api';
 import './TeamFinder.css';
 
 interface TeamFinderProps {
@@ -90,12 +91,12 @@ const [loading,setLoading] = useState(true);
     setConnectionState({ loading: true, error: null, success: null });
     
     try {
-      const token = localStorage.getItem("csh_token");
+      const token = getAuthToken();
       if (!token) {
         throw new Error('Please sign in again before sending a connection request.');
       }
 
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/send-connection`, {
+      const response = await fetch(apiUrl('/api/users/send-connection'), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,23 +141,30 @@ const [loading,setLoading] = useState(true);
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const token = localStorage.getItem("csh_token");
-        console.log("TOKEN BEING SENT:", token);
+        const token = getAuthToken();
         if (!token) {
-          window.location.assign("#/signin");
+          setConnectionState({
+            loading: false,
+            error: 'Please sign in again to view your network.',
+            success: null
+          });
+          setLoading(false);
           return;
         }
 
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/match`, {
+        const res = await fetch(apiUrl('/api/users/match'), {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
 
         if (res.status === 401 || res.status === 422) {
-          localStorage.removeItem("csh_token");
-          localStorage.removeItem("csh_user");
-          window.location.assign("#/signin");
+          setConnectionState({
+            loading: false,
+            error: 'Your session expired. Please sign in again.',
+            success: null
+          });
+          setLoading(false);
           return;
         }
 
@@ -196,10 +204,14 @@ const [loading,setLoading] = useState(true);
   useEffect(() => {
     const fetchPendingRequests = async () => {
       try {
-        const token = localStorage.getItem("csh_token");
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests`, {
+        const token = getAuthToken();
+        if (!token) return;
+
+        const res = await fetch(apiUrl('/api/users/connection-requests'), {
           headers: { Authorization: `Bearer ${token}` }
         });
+        if (!res.ok) return;
+
         const data = await res.json();
         const incoming = (data.requests || []).filter(
           (r: any) => r.to_user_id === currentUser.id
@@ -215,8 +227,10 @@ const [loading,setLoading] = useState(true);
   const handleRequestAction = async (requestId: string, action: 'accept' | 'reject') => {
     setRequestActionLoading(requestId);
     try {
-      const token = localStorage.getItem("csh_token");
-      await fetch(`${import.meta.env.VITE_API_URL}/api/users/connection-requests/${requestId}/${action}`, {
+      const token = getAuthToken();
+      if (!token) throw new Error('Please sign in again before responding to requests.');
+
+      await fetch(apiUrl(`/api/users/connection-requests/${requestId}/${action}`), {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -270,6 +284,12 @@ const [loading,setLoading] = useState(true);
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {connectionState.error && !selectedUser && (
+        <div className="alert alert-error">
+          {connectionState.error}
         </div>
       )}
 

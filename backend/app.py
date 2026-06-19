@@ -60,6 +60,7 @@ app.register_blueprint(funding_bp, url_prefix="/api/funding")
 app.register_blueprint(notifications_bp, url_prefix="/api/notifications")
 app.register_blueprint(mentorship_bp, url_prefix="/api/mentorship")
 app.register_blueprint(matchmaking_bp, url_prefix="/api/match")
+app.register_blueprint(tasks_bp, url_prefix="/api/tasks")
 @app.route("/")
 def home():
     return {"message": "ProjectHub backend is running 🚀"}
